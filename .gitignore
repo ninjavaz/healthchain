@@ -1,0 +1,21 @@
+# Emacs backup files
+*~
+*#
+.#*
+# Vim file artifacts
+.*.sw*
+.DS_Store
+.project
+# omit Go vendor directories
+vendor/
+.vscode
+.gradle
+.idea
+# Dependency directories
+node_modules/
+
+# crypto identities ignoring
+organizations/ordererOrganizations
+organizations/peerOrganizations
+/organizations/fabric-ca/hosp*
+/organizations/fabric-ca/orderer*

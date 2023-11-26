@@ -1,0 +1,1 @@
+# Repository for engineering thesis purposes. The subject is: 'A system for storing and exchanging electronic medical records based on blockchain technology.'
