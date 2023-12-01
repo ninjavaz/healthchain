@@ -5,7 +5,7 @@
 # system for engineering thesis
 
 export PATH=${PWD}/../bin:$PATH
-export FABRIC_CFG_PATH=${PWD}/config
+# export FABRIC_CFG_PATH=${PWD}/config
 export VERBOSE=false
 
 # Obtain CONTAINER_IDS and remove them
@@ -13,7 +13,7 @@ export VERBOSE=false
 function clearContainers() {
   CONTAINER_IDS=$(docker ps -a | awk '($2 ~ /dev-peer.*/) {print $1}')
   if [ -z "$CONTAINER_IDS" -o "$CONTAINER_IDS" == " " ]; then
-    infoln "No containers available for deletion"
+    echo "No containers available for deletion"
   else
     docker rm -f $CONTAINER_IDS
   fi
@@ -25,7 +25,7 @@ function clearContainers() {
 function removeUnwantedImages() {
   DOCKER_IMAGE_IDS=$(docker images | awk '($1 ~ /dev-peer.*/) {print $3}')
   if [ -z "$DOCKER_IMAGE_IDS" -o "$DOCKER_IMAGE_IDS" == " " ]; then
-    infoln "No images available for deletion"
+    echo "No images available for deletion"
   else
     docker rmi -f $DOCKER_IMAGE_IDS
   fi
@@ -115,6 +115,7 @@ function networkUp() {
   if [ ! -d "organizations/peerOrganizations" ]; then
     createOrgs
     createConsortium
+    sleep 5
   fi
 
   COMPOSE_FILES="-f ${COMPOSE_FILE_BASE}"
@@ -252,9 +253,9 @@ CC_SRC_PATH="NA"
 #language for chaincode
 CC_SRC_LANGUAGE="javascript"
 # Chaincode version
-CC_VERSION="4.0"
+CC_VERSION="1.0"
 # Chaincode definition sequence
-CC_SEQUENCE=3
+CC_SEQUENCE=1
 # chaincode init function, default is "NA"
 CC_INIT_FCN="initLedger"
 # endorsement policy defaults to "NA". This would allow chaincodes to use the majority default policy.

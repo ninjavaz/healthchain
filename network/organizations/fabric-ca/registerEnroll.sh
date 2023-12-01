@@ -189,7 +189,9 @@ function createOrderer() {
   echo "Enroll the CA admin"
   mkdir -p organizations/ordererOrganizations/healthchain.com
 
+
   export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/ordererOrganizations/healthchain.com
+  echo ${FABRIC_CA_CLIENT_HOME}
   #  rm -rf $FABRIC_CA_CLIENT_HOME/fabric-ca-client-config.yaml
   #  rm -rf $FABRIC_CA_CLIENT_HOME/msp
 

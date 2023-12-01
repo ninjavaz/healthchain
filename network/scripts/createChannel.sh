@@ -111,7 +111,7 @@ verifyResult() {
   fi
 }
 
-FABRIC_CFG_PATH=${PWD}/config
+# FABRIC_CFG_PATH=${PWD}/config
 
 ## Create channeltx
 echo "Generating channel create transaction '${CHANNEL_NAME}.tx'"

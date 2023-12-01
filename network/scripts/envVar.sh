@@ -1,7 +1,7 @@
 #!/bin/bash
 # This is a collection of bash functions used by different scripts
 
-. /vagrant/.env
+. /vagrant/network/.env
 export HOME_PATH=${HOME_PATH}
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${HOME_PATH}/organizations/ordererOrganizations/healthchain.com/orderers/orderer.healthchain.com/msp/tlscacerts/tlsca.healthchain.com-cert.pem
