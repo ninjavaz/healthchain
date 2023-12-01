@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 
 volumes:
   orderer.healthchain.com:
@@ -16,11 +16,12 @@ services:
     environment:
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_LISTENPORT=6050
+      - ORDERER_GENERAL_LISTENPORT=7050
       - ORDERER_GENERAL_GENESISMETHOD=file
-      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer.healthchain.com:9443
       # enabled TLS
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
@@ -34,12 +35,13 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
     volumes:
-        - ../system-genesis-block/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ../system-genesis-block/:/var/hyperledger/orderer/
         - ../organizations/ordererOrganizations/healthchain.com/orderers/orderer.healthchain.com/msp:/var/hyperledger/orderer/msp
         - ../organizations/ordererOrganizations/healthchain.com/orderers/orderer.healthchain.com/tls/:/var/hyperledger/orderer/tls
         - orderer.healthchain.com:/var/hyperledger/production/orderer
     ports:
-      - 6050:6050
+      - 7050:7050
+      - 9443:9443
     networks:
       - hospital
 
@@ -52,7 +54,7 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_hospital
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=docker_hospital
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -69,8 +71,9 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.hosp1.healthchain.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.hosp1.healthchain.com:7051
       - CORE_PEER_LOCALMSPID=hosp1MSP
+      - CORE_OPERATIONS_LISTENADDRESS=peer0.hosp1.healthchain.com:9444
     volumes:
-        - /var/run/:/host/var/run/
+        - /var/run/docker.sock:/host/var/run/docker.sock
         - ../organizations/peerOrganizations/hosp1.healthchain.com/peers/peer0.hosp1.healthchain.com/msp:/etc/hyperledger/fabric/msp
         - ../organizations/peerOrganizations/hosp1.healthchain.com/peers/peer0.hosp1.healthchain.com/tls:/etc/hyperledger/fabric/tls
         - peer0.hosp1.healthchain.com:/var/hyperledger/production
@@ -78,6 +81,7 @@ services:
     command: peer node start
     ports:
       - 7051:7051
+      - 9444:9444
     networks:
       - hospital
 
@@ -90,7 +94,7 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_hospital
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=docker_hospital
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -100,21 +104,23 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
       - CORE_PEER_ID=peer0.hosp2.healthchain.com
-      - CORE_PEER_ADDRESS=peer0.hosp2.healthchain.com:8051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_ADDRESS=peer0.hosp2.healthchain.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
       - CORE_PEER_CHAINCODEADDRESS=peer0.hosp2.healthchain.com:8052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.hosp2.healthchain.com:8051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.hosp2.healthchain.com:8051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.hosp2.healthchain.com:9051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.hosp2.healthchain.com:9051
       - CORE_PEER_LOCALMSPID=hosp2MSP
+      - CORE_OPERATIONS_LISTENADDRESS=peer0.hosp2.healthchain.com:9445
     volumes:
-        - /var/run/:/host/var/run/
+        - /var/run/docker.sock:/host/var/run/docker.sock
         - ../organizations/peerOrganizations/hosp2.healthchain.com/peers/peer0.hosp2.healthchain.com/msp:/etc/hyperledger/fabric/msp
         - ../organizations/peerOrganizations/hosp2.healthchain.com/peers/peer0.hosp2.healthchain.com/tls:/etc/hyperledger/fabric/tls
         - peer0.hosp2.healthchain.com:/var/hyperledger/production
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
-      - 8051:8051
+      - 9051:9051
+      - 9445:9445
     networks:
       - hospital

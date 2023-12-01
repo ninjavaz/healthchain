@@ -23,6 +23,7 @@ fi
 
 export DOCKER_VERSION=5:24.0.7-1~ubuntu.20.04~focal
 export SUDO_USER=vagrant
+. .env
 
 #1. GO
 # Get the version 1.13 from google
@@ -34,25 +35,25 @@ rm go1.13.3.linux-amd64.tar.gz
 # If GOROOT already set then DO Not set it again
 if [ -z $GOROOT ]
 then
-    # echo "export GOROOT=/usr/local/go" >> ~/.profile
-    # echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
+    echo "export GOROOT=/usr/local/go" >> ~/.profile
+    echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
 
-    # GOPATH=$PWD/../gopath
-    # GOPATH="$(cd "$(dirname "$GOPATH")"; pwd)/$(basename "$GOPATH")"
+    GOPATH=$PWD/../gopath
+    GOPATH="$(cd "$(dirname "$GOPATH")"; pwd)/$(basename "$GOPATH")"
 
-    # echo "export GOPATH=$GOPATH" >> ~/.profile
-    # echo "======== Updated .profile with GOROOT/GOPATH/PATH===="
+    echo "export GOPATH=$GOPATH" >> ~/.profile
+    echo "======== Updated .profile with GOROOT/GOPATH/PATH===="
 
-    # echo "export GOROOT=/usr/local/go" >> ~/.bashrc
-    # echo "export GOPATH=$GOPATH" >> ~/.bashrc
+    echo "export GOROOT=/usr/local/go" >> ~/.bashrc
+    echo "export GOPATH=$GOPATH" >> ~/.bashrc
     echo "======== Updated .profile with GOROOT/GOPATH/PATH===="
 
     export PATH=$PATH:/usr/local/go/bin
 
-    # GOCACHE="$HOME/.go-cache"
-    # echo "export GOCACHE=$HOME/.go-cache" >> $HOME/.bashrc
-    # sudo mkdir -p $GOCACHE
-    # chown -R $USER $GOCACHE
+    GOCACHE="$HOME/.go-cache"
+    echo "export GOCACHE=$HOME/.go-cache" >> $HOME/.bashrc
+    sudo mkdir -p $GOCACHE
+    chown -R $USER $GOCACHE
 
 else
     echo "======== No Change made to .profile ====="
@@ -71,7 +72,7 @@ sudo apt-get install -y "docker-ce-cli=${DOCKER_VERSION}"
 sudo apt-get install -y containerd.io docker-buildx-plugin docker-compose-plugin
 sudo docker info
 echo "---- Adding $SUDO_USER to the docker group ----"
-sudo usermod -aG docker $SUDO_USER
+sudo usermod -aG docker vagrant
 
 #start docker
 sudo service docker restart
@@ -85,7 +86,7 @@ export PATH=$PATH:$GOROOT/bin
 echo "GOPATH=$GOPATH"
 echo "GOROOT=$GOROOT"
 
-sudo mkdir -p $GOPATH
+sudo mkdir $GOPATH
 
 rm -rf ./temp 2> /dev/null
 # create temp directory
@@ -93,7 +94,7 @@ sudo mkdir temp  &> /dev/null
 cd temp
 
 echo "---- Starting to Download Fabric ----"
-curl -sSL https://bit.ly/2ysbOFE |bash -s $FABRIC_VERSION $FABRIC_CA_VERSION
+sudo curl -sSL https://bit.ly/2ysbOFE |bash -s $FABRIC_VERSION $FABRIC_CA_VERSION
 BIN_PATH=/usr/local/bin
 echo "---- Copying the binaries to /usr/local/bin ----"
 sudo cp -r ./fabric-samples/bin/* $BIN_PATH
@@ -105,7 +106,7 @@ sudo rm -rf temp
 echo "export PATH=$BIN_PATH:$PATH" >> $HOME/.profile
 echo "export PATH=$BIN_PATH:$PATH" >> $HOME/.bashrc
 
-sudo chmod u+x $BIN_PATH/*.sh
+sudo chmod u+x $BIN_PATH/*
 
 echo "---- Done. ----"
 
