@@ -27,7 +27,7 @@ public class ClientApp {
 		Path networkConfigPath = Paths.get("/vagrant", "network", "organizations", "peerOrganizations", "hosp1.healthchain.com", "connection-hosp1.yaml");
 
 		Gateway.Builder builder = Gateway.createBuilder();
-		builder.identity(wallet, "user2").networkConfig(networkConfigPath).discovery(true);
+		builder.identity(wallet, "user3").networkConfig(networkConfigPath).discovery(true);
 
 		// create a gateway connection
 		try (Gateway gateway = builder.connect()) {

@@ -28,9 +28,9 @@ public class EnrollAdmin {
 		// Create a CA client for interacting with the CA.
 		Properties props = new Properties();
 		props.put("pemFile",
-			"/vagrant/network/organizations/peerOrganizations/hosp1.healthchain.com/ca/ca.hosp1.healthchain.com-cert.pem");
+			"/vagrant/network/organizations/peerOrganizations/hosp2.healthchain.com/ca/ca.hosp2.healthchain.com-cert.pem");
 		props.put("allowAllHostNames", "true");
-		HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:7054", props);
+		HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:8054", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 		caClient.setCryptoSuite(cryptoSuite);
 
@@ -38,8 +38,8 @@ public class EnrollAdmin {
 		Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
 
 		// Check to see if we've already enrolled the admin user.
-		if (wallet.get("hosp1admin") != null) {
-			System.out.println("An identity for the admin user \"hosp1admin\" already exists in the wallet");
+		if (wallet.get("hosp2admin") != null) {
+			System.out.println("An identity for the admin user \"hosp2admin\" already exists in the wallet");
 			return;
 		}
 
@@ -47,9 +47,9 @@ public class EnrollAdmin {
 		final EnrollmentRequest enrollmentRequestTLS = new EnrollmentRequest();
 		enrollmentRequestTLS.addHost("localhost");
 		enrollmentRequestTLS.setProfile("tls");
-		Enrollment enrollment = caClient.enroll("hosp1admin", "hosp1healthchain", enrollmentRequestTLS);
-		Identity user = Identities.newX509Identity("hosp1MSP", enrollment);
-		wallet.put("hosp1admin", user);
-		System.out.println("Successfully enrolled user \"hosp1admin\" and imported it into the wallet");
+		Enrollment enrollment = caClient.enroll("hosp2admin", "hosp2healthchain", enrollmentRequestTLS);
+		Identity user = Identities.newX509Identity("hosp2MSP", enrollment);
+		wallet.put("hosp2admin", user);
+		System.out.println("Successfully enrolled user \"hosp2admin\" and imported it into the wallet");
 	}
 }
