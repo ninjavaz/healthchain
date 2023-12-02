@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### fabric ###
+/bin/
+/target/
+.settings/
+.classpath
+.project
+wallet
+!wallet/.gitkeep

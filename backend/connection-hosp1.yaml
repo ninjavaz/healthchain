@@ -1,0 +1,63 @@
+---
+name: healthchain-network-hosp1
+version: 1.0.0
+client:
+  organization: hosp1
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  hosp1:
+    mspid: hosp1MSP
+    peers:
+    - peer0.hosp1.healthchain.com
+    certificateAuthorities:
+    - ca.hosp1.healthchain.com
+peers:
+  peer0.hosp1.healthchain.com:
+    url: grpcs://localhost:7051
+    tlsCACerts:
+      pem: |
+          -----BEGIN CERTIFICATE-----
+          MIICFjCCAb2gAwIBAgIUNp9P4PQzRQWbH1k3rbmCKxdxOeUwCgYIKoZIzj0EAwIw
+          aDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK
+          EwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt
+          Y2Etc2VydmVyMB4XDTIzMTEzMDEzMDAwMFoXDTM4MTEyNjEzMDAwMFowaDELMAkG
+          A1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQKEwtIeXBl
+          cmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMtY2Etc2Vy
+          dmVyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqtw7vre3OoXJLyBH3nbuhAKF
+          lDYsh/McXk65jn6NF6EAOSopolQcyr47DLGkBdlSIHEoQu4xJDI/nrjptggp7qNF
+          MEMwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYE
+          FDNqW+VoIsaHsOjNCK7wgF578PhhMAoGCCqGSM49BAMCA0cAMEQCIGx+V0/MvJKV
+          Dfm++HOW4sYkWA0a0+7K38CjF4a8AX3DAiAmzbTf4+SWl1gSKXAFeerG6A00MAgb
+          lc+BqEkYYx7/XQ==
+          -----END CERTIFICATE-----
+          
+    grpcOptions:
+      ssl-target-name-override: peer0.hosp1.healthchain.com
+      hostnameOverride: peer0.hosp1.healthchain.com
+certificateAuthorities:
+  ca.hosp1.healthchain.com:
+    url: https://localhost:7054
+    caName: ca-hosp1
+    tlsCACerts:
+      pem: 
+        - |
+          -----BEGIN CERTIFICATE-----
+          MIICFjCCAb2gAwIBAgIUNp9P4PQzRQWbH1k3rbmCKxdxOeUwCgYIKoZIzj0EAwIw
+          aDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK
+          EwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt
+          Y2Etc2VydmVyMB4XDTIzMTEzMDEzMDAwMFoXDTM4MTEyNjEzMDAwMFowaDELMAkG
+          A1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQKEwtIeXBl
+          cmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMtY2Etc2Vy
+          dmVyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqtw7vre3OoXJLyBH3nbuhAKF
+          lDYsh/McXk65jn6NF6EAOSopolQcyr47DLGkBdlSIHEoQu4xJDI/nrjptggp7qNF
+          MEMwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYE
+          FDNqW+VoIsaHsOjNCK7wgF578PhhMAoGCCqGSM49BAMCA0cAMEQCIGx+V0/MvJKV
+          Dfm++HOW4sYkWA0a0+7K38CjF4a8AX3DAiAmzbTf4+SWl1gSKXAFeerG6A00MAgb
+          lc+BqEkYYx7/XQ==
+          -----END CERTIFICATE-----
+          
+    httpOptions:
+      verify: false
