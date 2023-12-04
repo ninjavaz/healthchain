@@ -24,6 +24,7 @@ fi
 export DOCKER_VERSION=5:24.0.7-1~ubuntu.20.04~focal
 export SUDO_USER=vagrant
 . .env
+export FABRIC_CFG_PATH=${FABRIC_CFG_PATH}
 
 #1. GO
 # Get the version 1.13 from google

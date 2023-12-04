@@ -34,7 +34,7 @@ function removeUnwantedImages() {
 # Tear down running network
 function networkDown() {
   # docker compose --env-file ./.env -f $COMPOSE_FILE_BASE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_CA -f $COMPOSE_FILE_REDIS down --volumes --remove-orphans
-  docker compose --env-file ./.env -f $COMPOSE_FILE_BASE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_CA down --volumes --remove-orphans
+  docker compose --env-file ./.env -f $COMPOSE_FILE_BASE -f $COMPOSE_FILE_COUCH down --volumes --remove-orphans
   # Don't remove the generated artifacts -- note, the ledgers are always removed
   if [ "$MODE" != "restart" ]; then
     # Bring down the network, deleting the volumes
@@ -247,15 +247,15 @@ DATABASE="couchdb"
 # main channel name
 CHANNEL_NAME="hospitalchannel"
 # chaincode name defaults to "basic"
-CC_NAME="healthchainCC1"
+CC_NAME="healthchainCC"
 # chaincode path defaults to "NA"
 CC_SRC_PATH="NA"
 #language for chaincode
 CC_SRC_LANGUAGE="javascript"
 # Chaincode version
-CC_VERSION="1.0"
+CC_VERSION="3.0"
 # Chaincode definition sequence
-CC_SEQUENCE=1
+CC_SEQUENCE=3
 # chaincode init function, default is "NA"
 CC_INIT_FCN="initLedger"
 # endorsement policy defaults to "NA". This would allow chaincodes to use the majority default policy.

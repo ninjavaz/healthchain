@@ -1,1 +1,1 @@
-java -jar target/backend-*.jar
+java -DCHAINCODE_TRACES_ENABLED=false -jar target/backend-*.jar

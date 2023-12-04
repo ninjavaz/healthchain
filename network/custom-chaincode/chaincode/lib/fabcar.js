@@ -208,6 +208,13 @@ class FabCar extends Contract {
         return JSON.stringify(allResults);
     }
 
+    async getUserRoles(ctx) {
+        const roles = await ctx.clientIdentity.getAttributeValue("hf.Affiliation");
+        const clientId = ctx.clientIdentity.getID();
+        return JSON.stringify(roles + " || " + clientId);
+
+    }
+
     async changeCarOwner(ctx, carNumber, newOwner) {
         console.info("============= START : changeCarOwner ===========");
 
