@@ -7,6 +7,8 @@
 export PATH=${PWD}/../bin:$PATH
 # export FABRIC_CFG_PATH=${PWD}/config
 export VERBOSE=false
+. .env
+export FABRIC_CFG_PATH
 
 # Obtain CONTAINER_IDS and remove them
 ## This function is called when you bring a network down
@@ -229,8 +231,7 @@ function deployCC() {
   exit 0
 }
 
-. .env
-export FABRIC_CFG_PATH
+
 #env variables
 COMPOSE_FILE_BASE=docker/docker-compose-network.yaml
 # certificate authorities compose file
@@ -253,9 +254,9 @@ CC_SRC_PATH="NA"
 #language for chaincode
 CC_SRC_LANGUAGE="javascript"
 # Chaincode version
-CC_VERSION="3.0"
+CC_VERSION="1.0"
 # Chaincode definition sequence
-CC_SEQUENCE=3
+CC_SEQUENCE=1
 # chaincode init function, default is "NA"
 CC_INIT_FCN="initLedger"
 # endorsement policy defaults to "NA". This would allow chaincodes to use the majority default policy.

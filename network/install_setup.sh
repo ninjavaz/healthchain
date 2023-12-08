@@ -28,10 +28,10 @@ export FABRIC_CFG_PATH=${FABRIC_CFG_PATH}
 
 #1. GO
 # Get the version 1.13 from google
-wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
-act='ttyout="*"'
-sudo tar -xf go1.13.3.linux-amd64.tar.gz --checkpoint --checkpoint-action=$act -C /usr/local 
-rm go1.13.3.linux-amd64.tar.gz
+# wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
+# act='ttyout="*"'
+# sudo tar -xf go1.13.3.linux-amd64.tar.gz --checkpoint --checkpoint-action=$act -C /usr/local 
+# rm go1.13.3.linux-amd64.tar.gz
 
 # If GOROOT already set then DO Not set it again
 if [ -z $GOROOT ]
@@ -39,7 +39,7 @@ then
     echo "export GOROOT=/usr/local/go" >> ~/.profile
     echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
 
-    GOPATH=$PWD/../gopath
+    GOPATH=$PWD/../../gopath
     GOPATH="$(cd "$(dirname "$GOPATH")"; pwd)/$(basename "$GOPATH")"
 
     echo "export GOPATH=$GOPATH" >> ~/.profile
@@ -84,9 +84,6 @@ sudo systemctl restart docker
 SETUP_FOLDER=$PWD
 export PATH=$PATH:$GOROOT/bin
 
-echo "GOPATH=$GOPATH"
-echo "GOROOT=$GOROOT"
-
 sudo mkdir $GOPATH
 
 rm -rf ./temp 2> /dev/null
@@ -95,10 +92,10 @@ sudo mkdir temp  &> /dev/null
 cd temp
 
 echo "---- Starting to Download Fabric ----"
-sudo curl -sSL https://bit.ly/2ysbOFE |bash -s $FABRIC_VERSION $FABRIC_CA_VERSION
-BIN_PATH=/usr/local/bin
+sudo curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/release-2.2/scripts/bootstrap.sh | bash -s $FABRIC_VERSION $FABRIC_CA_VERSION
+BIN_PATH=/usr/local/
 echo "---- Copying the binaries to /usr/local/bin ----"
-sudo cp -r ./fabric-samples/bin/* $BIN_PATH
+sudo cp -r ./fabric-samples/bin/ $BIN_PATH
 sudo rm -rf ./fabric-samples/bin
 # Clean up
 cd ..
@@ -107,7 +104,7 @@ sudo rm -rf temp
 echo "export PATH=$BIN_PATH:$PATH" >> $HOME/.profile
 echo "export PATH=$BIN_PATH:$PATH" >> $HOME/.bashrc
 
-sudo chmod u+x $BIN_PATH/*
+sudo chmod u+x $BIN_PATH/
 
 echo "---- Done. ----"
 
