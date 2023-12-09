@@ -173,7 +173,7 @@ function createOrgs() {
   createOrderer
 
   echo "---- Generate CCP files for Hospital 1 and Hospital 2 ----"
-  ./organizations/ccp-generate.sh
+  bash organizations/ccp-generate.sh
 }
 
 # Generate orderer system channel genesis block.

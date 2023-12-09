@@ -13,7 +13,7 @@
 #2.4 jq
 #2.5 git
 #3.1 fabric 2.2.14
-
+#4. java
 
 if [ -n "$SUDO_COMMAND" ]
 then
@@ -24,7 +24,9 @@ fi
 export DOCKER_VERSION=5:24.0.7-1~ubuntu.20.04~focal
 export SUDO_USER=vagrant
 . .env
-export FABRIC_CFG_PATH=${FABRIC_CFG_PATH}
+
+echo "export FABRIC_CFG_PATH=$FABRIC_CFG_PATH" >> ~/.bashrc
+
 
 #1. GO
 # Get the version 1.13 from google
@@ -83,6 +85,8 @@ sudo systemctl restart docker
 #3. fabric
 SETUP_FOLDER=$PWD
 export PATH=$PATH:$GOROOT/bin
+
+sudo apt-get install openjdk-8-jdk
 
 sudo mkdir $GOPATH
 
