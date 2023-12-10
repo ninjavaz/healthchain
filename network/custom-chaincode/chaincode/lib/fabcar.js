@@ -7,6 +7,7 @@
 "use strict";
 
 const { Contract } = require("fabric-contract-api");
+const ClientIdentity = require("fabric-shim").ClientIdentity;
 
 class FabCar extends Contract {
     async initLedger(ctx) {
@@ -209,9 +210,10 @@ class FabCar extends Contract {
     }
 
     async getUserRoles(ctx) {
-        const roles = await ctx.clientIdentity.getAttributeValue("hf.Affiliation");
-        const clientId = ctx.clientIdentity.getID();
-        return JSON.stringify(roles + " || " + clientId);
+        let clientIdentity = new ClientIdentity(ctx.stub);
+        const roles = clientIdentity.getAttributeValue("role");
+        const clientId = clientIdentity.getID();
+        return JSON.stringify(roles + " || " + clientId + " v2");
 
     }
 

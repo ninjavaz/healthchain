@@ -7,7 +7,7 @@ import java.security.PrivateKey;
 
 @Data
 @Builder
-public class Enrollment implements org.hyperledger.fabric.sdk.Enrollment {
+public class CustomEnrollment implements org.hyperledger.fabric.sdk.Enrollment {
 
     private PrivateKey key;
     private String cert;

@@ -1,41 +1,31 @@
 package com.healthchain.backend.controller;
 
-//import com.healthchain.backend.model.Identity;
-
 import com.healthchain.backend.model.CustomIdentity;
 import com.healthchain.backend.model.util.ErrorMessage;
+import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.service.AuthService;
+import lombok.extern.log4j.Log4j;
 import org.hyperledger.fabric.gateway.*;
-import org.hyperledger.fabric.sdk.Enrollment;
-import org.hyperledger.fabric.sdk.NetworkConfig;
-import org.hyperledger.fabric.sdk.User;
-import org.hyperledger.fabric.sdk.security.CryptoSuite;
-import org.hyperledger.fabric.sdk.security.CryptoSuiteFactory;
-import org.hyperledger.fabric_ca.sdk.EnrollmentRequest;
-import org.hyperledger.fabric_ca.sdk.HFCAAffiliation;
-import org.hyperledger.fabric_ca.sdk.HFCAClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.hyperledger.fabric.gateway.Identity;
-
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Timestamp;
 import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+
 
 @RestController
+@Log4j
 @RequestMapping("/healthchain/api/auth/")
 public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private NetworkProperties networkProperties;
 
     /**
      * Login method t..
@@ -43,10 +33,11 @@ public class AuthController {
      * @return
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> login(@RequestBody CustomIdentity id) throws Exception {
+    public ResponseEntity<?> login(@RequestBody CustomIdentity id, @RequestParam String hospName) throws Exception {
         byte[] result;
+        NetworkProperties.HospInfo hospInfo = networkProperties.getHospInfoByName().get(hospName);
 
-        Path networkConfigPath = Paths.get("/vagrant/backend/connection-hosp1.yaml");
+        Path networkConfigPath = Paths.get(hospInfo.getNetworkConfigPath());
 
         try {
             Identity identity = Identities.newX509Identity(id.getMspId(), Identities.readX509Certificate(id.getCredentials().getCertificate()), Identities.readPrivateKey(id.getCredentials().getPrivateKey()));
@@ -104,6 +95,7 @@ public class AuthController {
                 return ResponseEntity.status(error.getCode()).body(error);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             ErrorMessage error = ErrorMessage.builder().code(HttpStatus.UNAUTHORIZED.value()).timestamp(new Date()).message("Given identity is not fault").build();
             return ResponseEntity.status(error.getCode()).body(error);
         }
@@ -119,6 +111,9 @@ public class AuthController {
             CustomIdentity identity = authService.registerUser(username, hospName, adminId);
             return ResponseEntity.status(HttpStatus.CREATED).body(identity);
         } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
             return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }

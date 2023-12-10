@@ -315,7 +315,6 @@ Channel: &ChannelDefaults
 #
 ################################################################################
 Profiles:
-
     TwoOrgsOrdererGenesis:
         <<: *ChannelDefaults
         Orderer:

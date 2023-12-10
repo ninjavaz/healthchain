@@ -29,11 +29,11 @@ echo "export FABRIC_CFG_PATH=$FABRIC_CFG_PATH" >> ~/.bashrc
 
 
 #1. GO
-# Get the version 1.13 from google
-# wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
-# act='ttyout="*"'
-# sudo tar -xf go1.13.3.linux-amd64.tar.gz --checkpoint --checkpoint-action=$act -C /usr/local 
-# rm go1.13.3.linux-amd64.tar.gz
+#Get the version 1.13 from google
+wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
+act='ttyout="*"'
+sudo tar -xf go1.13.3.linux-amd64.tar.gz --checkpoint --checkpoint-action=$act -C /usr/local 
+rm go1.13.3.linux-amd64.tar.gz
 
 # If GOROOT already set then DO Not set it again
 if [ -z $GOROOT ]

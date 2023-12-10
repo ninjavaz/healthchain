@@ -7,13 +7,13 @@ import java.util.Set;
 
 @Data
 @Builder
-public class User implements org.hyperledger.fabric.sdk.User {
+public class CustomUser implements org.hyperledger.fabric.sdk.User {
 
     private String name;
     private Set<String> roles;
     private String account;
     private String affiliation;
-    private Enrollment enrollment;
+    private CustomEnrollment enrollment;
     private String mspId;
 
 }
