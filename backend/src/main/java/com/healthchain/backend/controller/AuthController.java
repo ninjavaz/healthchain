@@ -1,6 +1,7 @@
 package com.healthchain.backend.controller;
 
 //import com.healthchain.backend.model.Identity;
+
 import com.healthchain.backend.model.CustomIdentity;
 import com.healthchain.backend.model.util.ErrorMessage;
 import com.healthchain.backend.service.AuthService;
@@ -16,10 +17,7 @@ import org.hyperledger.fabric_ca.sdk.HFCAClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.hyperledger.fabric.gateway.Identity;
 
 import java.io.File;
@@ -41,17 +39,14 @@ public class AuthController {
 
     /**
      * Login method t..
+     *
      * @return
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> login(@RequestBody CustomIdentity id) throws Exception{
+    public ResponseEntity<?> login(@RequestBody CustomIdentity id) throws Exception {
         byte[] result;
 
-
-
         Path networkConfigPath = Paths.get("/vagrant/backend/connection-hosp1.yaml");
-
-
 
         try {
             Identity identity = Identities.newX509Identity(id.getMspId(), Identities.readX509Certificate(id.getCredentials().getCertificate()), Identities.readPrivateKey(id.getCredentials().getPrivateKey()));
@@ -70,7 +65,6 @@ public class AuthController {
                 result = contract.evaluateTransaction("getUserRoles");
 
                 //get user roles from attribute...
-
 
 
                 // Access the user's identity
@@ -116,6 +110,24 @@ public class AuthController {
     }
 
 
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public ResponseEntity<?> register(@RequestParam("username") String username,
+                                      @RequestParam("hospName") String hospName,
+                                      @RequestBody CustomIdentity adminId) {
+
+        try {
+            CustomIdentity identity = authService.registerUser(username, hospName, adminId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(identity);
+        } catch (Exception e) {
+            return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    private ResponseEntity<ErrorMessage> buildErrorResponseEntity(HttpStatus code, Exception e) {
+        ErrorMessage errorMessage = ErrorMessage.builder().code(code.value()).timestamp(new Date())
+                .name("HEALTHCHAIN_EXCEPTION").message(e.getMessage()).build();
+        return ResponseEntity.status(code).body(errorMessage);
+    }
 
 
 }

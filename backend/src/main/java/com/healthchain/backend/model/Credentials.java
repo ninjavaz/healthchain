@@ -1,18 +1,13 @@
 package com.healthchain.backend.model;
 
+import lombok.Builder;
 import lombok.Data;
 
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-
 @Data
+@Builder
 public class Credentials {
+
     private String certificate;
     private String privateKey;
 
-
-//    public PrivateKey getKey() {
-//        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-//        return keyFactory.generatePrivate(privateKey);
-//    }
 }
