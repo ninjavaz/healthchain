@@ -1,9 +1,6 @@
 package com.healthchain.backend.service;
 
-import com.healthchain.backend.model.Credentials;
-import com.healthchain.backend.model.CustomIdentity;
-import com.healthchain.backend.model.CustomUser;
-import com.healthchain.backend.model.CustomEnrollment;
+import com.healthchain.backend.model.*;
 import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.model.util.NetworkProperties.HospInfo;
 import lombok.extern.log4j.Log4j;
@@ -35,7 +32,7 @@ public class AuthService {
      * @return
      * @throws Exception
      */
-    public CustomIdentity registerUser(String username, String hospName, CustomIdentity adminId) throws Exception {
+    public CustomIdentity registerUser(String username, String hospName, Role role, CustomIdentity adminId) throws Exception {
         HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);
         // Create a CA client for interacting with the CA.
         Properties props = new Properties();
@@ -57,16 +54,14 @@ public class AuthService {
         X509Identity adminIdentity = (X509Identity) wallet.get(hospInfo.getUsername());
 
         if (!isIdentitySameAsCustomIdentity(adminIdentity, adminId)) {
-//                System.out.println(hospInfo.getUsername() + " needs to be the same as value passed in request body");
-            throw new RuntimeException(hospInfo.getUsername() + " identity in wallet does not match to given identity");
+            throw new RuntimeException(hospInfo.getUsername() + " identity in wallet does not match given identity");
         }
 
         // Register the user, enroll the user, and import the new identity into the wallet
         RegistrationRequest registrationRequest = new RegistrationRequest(username);
         // Set attributes for the user
         registrationRequest.setEnrollmentID(username);
-//        registrationRequest.setAffiliation(hospName);
-        registrationRequest.addAttribute(new Attribute("role", "patient", true));
+        registrationRequest.addAttribute(new Attribute("role", role.getValue(), true));
 
         // Register and enroll the new user
         String enrollmentSecret = caClient.register(registrationRequest, buildAdminUser(hospName, adminIdentity));
@@ -80,6 +75,47 @@ public class AuthService {
                         .certificate(Identities.toPemString(user.getCertificate()))
                         .privateKey(Identities.toPemString(user.getPrivateKey())).build())
                 .build();
+    }
+
+    /**
+     * Method used only while starting an app to create current admin Identities and save them in the wallet.
+     * @param hospName
+     */
+    public void enrollAdmin(String hospName) {
+        // Create a CA client for interacting with the CA.
+        HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);
+        Properties props = new Properties();
+        props.put("pemFile", hospInfo.getCertPath());
+        props.put("allowAllHostNames", "true");
+        try {
+            HFCAClient caClient = HFCAClient.createNewInstance(hospInfo.getCaUrl(), props);
+            CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
+            caClient.setCryptoSuite(cryptoSuite);
+
+            // Create a wallet for managing identities
+            Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
+
+            // Check to see if we've already enrolled the admin user.
+            if (wallet.get(hospInfo.getUsername()) != null) {
+                log.warn("An identity for the admin user " + hospInfo.getUsername() + " already exists in the wallet");
+                return;
+            }
+
+            // Enroll the admin user, and import the new identity into the wallet.
+            final EnrollmentRequest enrollmentRequestTLS = new EnrollmentRequest();
+            enrollmentRequestTLS.addHost("localhost");
+            enrollmentRequestTLS.setProfile("tls");
+
+            X509Enrollment enrollment = (X509Enrollment) caClient.enroll(hospInfo.getUsername(),
+                    hospInfo.getPassword(), enrollmentRequestTLS);
+            Identity user = Identities.newX509Identity(hospInfo.getMspName(), enrollment);
+            wallet.put(hospInfo.getUsername(), user);
+            log.info("Successfully enrolled user " + hospInfo.getUsername() + " and imported it into the wallet");
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
     }
 
     /**
@@ -107,45 +143,5 @@ public class AuthService {
                         .cert(Identities.toPemString(adminId.getCertificate()))
                         .key(adminId.getPrivateKey()).build())
                 .build();
-    }
-
-    /**
-     * Method used only while starting an app to create current admin Identities and save them in the wallet.
-     * @param hospName
-     */
-    public void enrollAdmin(String hospName) {
-
-        // Create a CA client for interacting with the CA.
-        Properties props = new Properties();
-        props.put("pemFile", networkProps.getHospInfoByName().get(hospName).getCertPath());
-        props.put("allowAllHostNames", "true");
-        try {
-            HFCAClient caClient = HFCAClient.createNewInstance(networkProps.getHospInfoByName().get(hospName).getCaUrl(), props);
-            CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
-            caClient.setCryptoSuite(cryptoSuite);
-
-            // Create a wallet for managing identities
-            Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
-
-            // Check to see if we've already enrolled the admin user.
-            if (wallet.get(networkProps.getHospInfoByName().get(hospName).getUsername()) != null) {
-                log.warn("An identity for the admin user " + networkProps.getHospInfoByName().get(hospName).getUsername() + " already exists in the wallet");
-                return;
-            }
-
-            // Enroll the admin user, and import the new identity into the wallet.
-            final EnrollmentRequest enrollmentRequestTLS = new EnrollmentRequest();
-            enrollmentRequestTLS.addHost("localhost");
-            enrollmentRequestTLS.setProfile("tls");
-            X509Enrollment enrollment = (X509Enrollment) caClient.enroll(networkProps.getHospInfoByName().get(hospName).getUsername(),
-                    networkProps.getHospInfoByName().get(hospName).getPassword(), enrollmentRequestTLS);
-            Identity user = Identities.newX509Identity(networkProps.getHospInfoByName().get(hospName).getMspName(), enrollment);
-            wallet.put(networkProps.getHospInfoByName().get(hospName).getUsername(), user);
-            log.info("Successfully enrolled user " + networkProps.getHospInfoByName().get(hospName).getUsername() + " and imported it into the wallet");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        }
-
     }
 }

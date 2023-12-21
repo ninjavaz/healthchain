@@ -114,11 +114,11 @@ function networkUp() {
 
   checkPrereqs
   # generate artifacts if they don't exist
-  if [ ! -d "organizations/peerOrganizations" ]; then
+  # if [ ! -d "organizations/peerOrganizations" ]; then
     createOrgs
     createConsortium
     sleep 5
-  fi
+  # fi
 
   COMPOSE_FILES="-f ${COMPOSE_FILE_BASE}"
 
@@ -254,9 +254,9 @@ CC_SRC_PATH="NA"
 #language for chaincode
 CC_SRC_LANGUAGE="javascript"
 # Chaincode version
-CC_VERSION="2.0"
+CC_VERSION="1.0"
 # Chaincode definition sequence
-CC_SEQUENCE=2
+CC_SEQUENCE=1
 # chaincode init function, default is "NA"
 CC_INIT_FCN="initLedger"
 # endorsement policy defaults to "NA". This would allow chaincodes to use the majority default policy.

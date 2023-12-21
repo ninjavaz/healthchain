@@ -209,13 +209,35 @@ class FabCar extends Contract {
         return JSON.stringify(allResults);
     }
 
-    async getUserRoles(ctx) {
+    async getUserRole(ctx) {
         let clientIdentity = new ClientIdentity(ctx.stub);
-        const roles = clientIdentity.getAttributeValue("role");
-        const clientId = clientIdentity.getID();
-        return JSON.stringify(roles + " || " + clientId + " v2");
-
+        const role = clientIdentity.getAttributeValue("role");
+        return JSON.stringify(role);
     }
+
+    // async createUser(ctx, user) {
+    //     // let clientIdentity = new ClientIdentity(ctx.stub);
+    //     const clientId = getClientId(ctx)
+    //     const user = {
+    //         color,
+    //         docType: "car",
+    //         make,
+    //         model,
+    //         owner,
+    //     };
+
+    //     await ctx.stub.putState(clientId, Buffer.from(JSON.stringify(user)));
+    // }
+
+
+    async getClientId(ctx) {
+        let clientIdentity = new ClientIdentity(ctx.stub);
+        let identity = clientIdentity.getID().split('::');
+        identity = identity[1].split('/')[2].split('=');
+        return identity[1].toString('utf8');
+    }
+
+
 
     async changeCarOwner(ctx, carNumber, newOwner) {
         console.info("============= START : changeCarOwner ===========");
