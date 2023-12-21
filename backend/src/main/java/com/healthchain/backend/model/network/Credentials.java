@@ -1,4 +1,4 @@
-package com.healthchain.backend.model;
+package com.healthchain.backend.model.network;
 
 import lombok.Builder;
 import lombok.Data;

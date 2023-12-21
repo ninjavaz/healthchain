@@ -1,6 +1,10 @@
 package com.healthchain.backend.service;
 
-import com.healthchain.backend.model.*;
+import com.healthchain.backend.model.network.Credentials;
+import com.healthchain.backend.model.network.CustomEnrollment;
+import com.healthchain.backend.model.network.CustomIdentity;
+import com.healthchain.backend.model.network.CustomUser;
+import com.healthchain.backend.model.network.Role;
 import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.model.util.NetworkProperties.HospInfo;
 import lombok.extern.log4j.Log4j;

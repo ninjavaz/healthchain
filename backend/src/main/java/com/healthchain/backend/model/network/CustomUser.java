@@ -1,5 +1,6 @@
-package com.healthchain.backend.model;
+package com.healthchain.backend.model.network;
 
+import com.healthchain.backend.model.network.CustomEnrollment;
 import lombok.Builder;
 import lombok.Data;
 

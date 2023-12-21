@@ -1,21 +1,17 @@
 package com.healthchain.backend.controller;
 
-import com.healthchain.backend.model.CustomIdentity;
-import com.healthchain.backend.model.Role;
+import com.healthchain.backend.model.network.CustomIdentity;
+import com.healthchain.backend.model.network.Role;
 import com.healthchain.backend.model.util.ErrorMessage;
 import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.service.AuthService;
 import lombok.extern.log4j.Log4j;
-import org.hyperledger.fabric.gateway.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.hyperledger.fabric.gateway.Identity;
 
 import javax.servlet.http.HttpSession;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
 
 
@@ -132,23 +128,6 @@ public class AuthController {
             return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
-
-//    {
-//        "resourceType": "Patient",
-//        "id": "592913",
-//        "gender" : "male",
-//            "telecom" : [{
-//        "system" : "phone",
-//        "value" : "0648352638",
-//                "use" : "mobile"
-//    },
-//        "name": [ {
-//        "use": "official",
-//                "family": "Moazzam",
-//                "given": [ "Khan" ],
-//    } ],
-//        "birthDate" : "1944-11-17"
-//    }
 
 
     private ResponseEntity<ErrorMessage> buildErrorResponseEntity(HttpStatus code, Exception e) {
