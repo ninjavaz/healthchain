@@ -46,13 +46,13 @@
 
       </plugins>
    </build>
-   <repositories>
-      <repository>
-         <id>oss-sonatype</id>
-         <name>OSS Sonatype</name>
-         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      </repository>
-   </repositories>
+<!--   <repositories>-->
+<!--      <repository>-->
+<!--         <id>oss-sonatype</id>-->
+<!--         <name>OSS Sonatype</name>-->
+<!--         <url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
+<!--      </repository>-->
+<!--   </repositories>-->
    <dependencies>
       <dependency>
          <groupId>org.hyperledger.fabric</groupId>

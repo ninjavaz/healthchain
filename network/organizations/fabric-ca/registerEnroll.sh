@@ -10,6 +10,7 @@ function createHosp1() {
   export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/peerOrganizations/hosp1.healthchain.com/
 
   set -x
+  # fabric-ca-client register --caname ca-hosp1 --id.name hosp1admin --id.attrs "role=ADMIN:ecert" --id.secret hosp1healthchain --id.type admin --tls.certfiles ${PWD}/organizations/fabric-ca/hosp1/tls-cert.pem
   fabric-ca-client enroll -u https://hosp1admin:hosp1healthchain@localhost:7054 --caname ca-hosp1 --tls.certfiles ${PWD}/organizations/fabric-ca/hosp1/tls-cert.pem
   { set +x; } 2>/dev/null
 
@@ -40,7 +41,7 @@ function createHosp1() {
 
   echo "Register the org admin"
   set -x
-  fabric-ca-client register --caname ca-hosp1 --id.name hosp1hosp1admin --id.secret hosp1hosp1healthchain --id.type admin --tls.certfiles ${PWD}/organizations/fabric-ca/hosp1/tls-cert.pem
+  fabric-ca-client register --caname ca-hosp1 --id.name hosp1hosp1admin --id.attrs 'role=ADMIN:ecert,"hf.Registrar.Roles=client,user,admin:ecert","hf.Registrar.DelegateRoles=client,user,admin",hf.Registrar.Attributes=*,hf.GenCRL=true,hf.AffiliationMgr=true' --id.secret hosp1hosp1healthchain --id.type admin --tls.certfiles ${PWD}/organizations/fabric-ca/hosp1/tls-cert.pem
   { set +x; } 2>/dev/null
 
   mkdir -p organizations/peerOrganizations/hosp1.healthchain.com/peers
@@ -85,7 +86,7 @@ function createHosp1() {
 
   echo "Generate the org admin msp"
   set -x
-  fabric-ca-client enroll -u https://hosp1hosp1admin:hosp1hosp1healthchain@localhost:7054 --caname ca-hosp1 -M ${PWD}/organizations/peerOrganizations/hosp1.healthchain.com/users/Admin@hosp1.healthchain.com/msp --tls.certfiles ${PWD}/organizations/fabric-ca/hosp1/tls-cert.pem
+  fabric-ca-client enroll -u https://hosp1hosp1admin:hosp1hosp1healthchain@localhost:7054 --enrollment.attrs "role" --caname ca-hosp1 -M ${PWD}/organizations/peerOrganizations/hosp1.healthchain.com/users/Admin@hosp1.healthchain.com/msp --tls.certfiles ${PWD}/organizations/fabric-ca/hosp1/tls-cert.pem
   { set +x; } 2>/dev/null
 
   cp ${PWD}/organizations/peerOrganizations/hosp1.healthchain.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/hosp1.healthchain.com/users/Admin@hosp1.healthchain.com/msp/config.yaml
@@ -102,7 +103,9 @@ function createHosp2() {
   #  rm -rf $FABRIC_CA_CLIENT_HOME/msp
 
   set -x
+  # fabric-ca-client register --caname ca-hosp2 --id.name hosp2admin --id.attrs "role=ADMIN:ecert" --id.secret hosp2healthchain --id.type admin --tls.certfiles ${PWD}/organizations/fabric-ca/hosp2/tls-cert.pem
   fabric-ca-client enroll -u https://hosp2admin:hosp2healthchain@localhost:8054 --caname ca-hosp2 --tls.certfiles ${PWD}/organizations/fabric-ca/hosp2/tls-cert.pem
+
   { set +x; } 2>/dev/null
 
   echo 'NodeOUs:
@@ -132,7 +135,7 @@ function createHosp2() {
 
   echo "Register the org admin"
   set -x
-  fabric-ca-client register --caname ca-hosp2 --id.name hosp2hosp2admin --id.secret hosp2hosp2healthchain --id.type admin --tls.certfiles ${PWD}/organizations/fabric-ca/hosp2/tls-cert.pem
+  fabric-ca-client register --caname ca-hosp2 --id.attrs 'role=ADMIN:ecert,"hf.Registrar.Roles=client,user,admin:ecert","hf.Registrar.DelegateRoles=client,user,admin",hf.Registrar.Attributes=*,hf.GenCRL=true,hf.AffiliationMgr=true' --id.name hosp2hosp2admin --id.secret hosp2hosp2healthchain --id.type admin --tls.certfiles ${PWD}/organizations/fabric-ca/hosp2/tls-cert.pem
   { set +x; } 2>/dev/null
 
   mkdir -p organizations/peerOrganizations/hosp2.healthchain.com/peers
@@ -177,7 +180,7 @@ function createHosp2() {
 
   echo "Generate the org admin msp"
   set -x
-  fabric-ca-client enroll -u https://hosp2hosp2admin:hosp2hosp2healthchain@localhost:8054 --caname ca-hosp2 -M ${PWD}/organizations/peerOrganizations/hosp2.healthchain.com/users/Admin@hosp2.healthchain.com/msp --tls.certfiles ${PWD}/organizations/fabric-ca/hosp2/tls-cert.pem
+  fabric-ca-client enroll -u https://hosp2hosp2admin:hosp2hosp2healthchain@localhost:8054 --enrollment.attrs "role" --caname ca-hosp2 -M ${PWD}/organizations/peerOrganizations/hosp2.healthchain.com/users/Admin@hosp2.healthchain.com/msp --tls.certfiles ${PWD}/organizations/fabric-ca/hosp2/tls-cert.pem
   { set +x; } 2>/dev/null
 
   cp ${PWD}/organizations/peerOrganizations/hosp2.healthchain.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/hosp2.healthchain.com/users/Admin@hosp2.healthchain.com/msp/config.yaml

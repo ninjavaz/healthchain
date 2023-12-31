@@ -6,7 +6,7 @@
 
 'use strict';
 
-const FabCar = require('./lib/fabcar');
+const HealthchainCode = require('./lib/healthchain-code');
 
-module.exports.FabCar = FabCar;
-module.exports.contracts = [ FabCar ];
+module.exports.HealthchainCode = HealthchainCode;
+module.exports.contracts = [ HealthchainCode ];

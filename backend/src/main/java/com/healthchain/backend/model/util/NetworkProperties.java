@@ -21,8 +21,8 @@ public class NetworkProperties {
         private String caUrl;
         private String certPath;
         private String networkConfigPath;
-        private String username;
-        private String password;
+        private String adminUsername;
+        private String adminPassword;
         private String mspName;
     }
 }

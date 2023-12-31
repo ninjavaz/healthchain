@@ -28,11 +28,13 @@ setGlobals() {
     export CORE_PEER_LOCALMSPID="hosp1MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=${HOME_PATH}/organizations/peerOrganizations/hosp1.healthchain.com/peers/peer0.hosp1.healthchain.com/tls/ca.crt
     export CORE_PEER_MSPCONFIGPATH=${HOME_PATH}/organizations/peerOrganizations/hosp1.healthchain.com/users/Admin@hosp1.healthchain.com/msp
+    # export CORE_PEER_MSPCONFIGPATH=${HOME_PATH}/organizations/peerOrganizations/hosp1.healthchain.com/peers/peer0.hosp1.healthchain.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
   elif [ $USING_ORG -eq 2 ]; then
     export CORE_PEER_LOCALMSPID="hosp2MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=${HOME_PATH}/organizations/peerOrganizations/hosp2.healthchain.com/peers/peer0.hosp2.healthchain.com/tls/ca.crt
     export CORE_PEER_MSPCONFIGPATH=${HOME_PATH}/organizations/peerOrganizations/hosp2.healthchain.com/users/Admin@hosp2.healthchain.com/msp
+    # export CORE_PEER_MSPCONFIGPATH=${HOME_PATH}/organizations/peerOrganizations/hosp2.healthchain.com/peers/peer0.hosp2.healthchain.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
   else
     echo "hosp Unknown"

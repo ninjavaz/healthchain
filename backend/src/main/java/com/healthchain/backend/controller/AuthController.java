@@ -1,7 +1,10 @@
 package com.healthchain.backend.controller;
 
+import com.google.gson.Gson;
 import com.healthchain.backend.model.network.CustomIdentity;
 import com.healthchain.backend.model.network.Role;
+import com.healthchain.backend.model.resource.PatientResource;
+import com.healthchain.backend.model.resource.Resource;
 import com.healthchain.backend.model.util.ErrorMessage;
 import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.service.AuthService;
@@ -10,14 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpSession;
 import java.util.Date;
 
 
 @RestController
 @Log4j
-@RequestMapping("/healthchain/api/auth/")
+@RequestMapping("/healthchain/api/")
 public class AuthController {
 
     @Autowired
@@ -26,29 +27,29 @@ public class AuthController {
     @Autowired
     private NetworkProperties networkProperties;
 
-    @RequestMapping(value = "/check", method = RequestMethod.GET)
-    public Object check(HttpSession session) {
-        return
-                session.getAttribute("identity") +
-                        String.valueOf(session.getCreationTime()) +
-                        String.valueOf(session.getMaxInactiveInterval());
-    }
+//    @RequestMapping(value = "/check", method = RequestMethod.GET)
+//    public Object check(HttpSession session) {
+//        return
+//                session.getAttribute("identity") +
+//                        String.valueOf(session.getCreationTime()) +
+//                        String.valueOf(session.getMaxInactiveInterval());
+//    }
 
-    /**
-     * Login method t..
-     *
-     * @return
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public void login(HttpSession session, @RequestBody CustomIdentity identity, @RequestParam String hospName) throws Exception {
-
-        session.setAttribute("identity", identity.toString());
-        session.setMaxInactiveInterval(60);
+//    /**
+//     * Login method t..
+//     *
+//     * @return
+//     */
+//    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    public void login(HttpSession session, @RequestBody CustomIdentity identity, @RequestParam String hospName) throws Exception {
+//
+////        session.setAttribute("identity", identity.toString());
+////        session.setMaxInactiveInterval(60);
 //        byte[] result;
 //        NetworkProperties.HospInfo hospInfo = networkProperties.getHospInfoByName().get(hospName);
 //
 //        Path networkConfigPath = Paths.get(hospInfo.getNetworkConfigPath());
-//
+
 //        try {
 //            Identity identity = Identities.newX509Identity(id.getMspId(), Identities.readX509Certificate(id.getCredentials().getCertificate()), Identities.readPrivateKey(id.getCredentials().getPrivateKey()));
 //            Gateway.Builder builder = Gateway.createBuilder();
@@ -109,17 +110,34 @@ public class AuthController {
 //            ErrorMessage error = ErrorMessage.builder().code(HttpStatus.UNAUTHORIZED.value()).timestamp(new Date()).message("Given identity is not fault").build();
 //            return ResponseEntity.status(error.getCode()).body(error);
 //        }
+//    }
+
+
+
+    @RequestMapping(value = "/Patient", method = RequestMethod.GET)
+    public ResponseEntity<?> getPatientResource(@RequestHeader("Authorization") String identity, @RequestParam("hospName") String hospName) {
+        try {
+            Gson gson = new Gson();
+            CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
+            Resource patient = authService.getResource(obj, hospName);
+            return ResponseEntity.status(HttpStatus.OK).body(patient);
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
+            return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
     }
 
 
-    @RequestMapping(value = "/register-user", method = RequestMethod.POST)
-    public ResponseEntity<?> register(@RequestParam("username") String username,
-                                      @RequestParam("hospName") String hospName,
-                                      @RequestParam("role") Role role,
-                                      @RequestBody CustomIdentity adminId) {
+    @RequestMapping(value = "/Patient", method = RequestMethod.POST)
+    public ResponseEntity<?> savePatientResource(@RequestHeader("Authorization") String adminId,
+                                      @RequestBody PatientResource patient) {
 
         try {
-            CustomIdentity identity = authService.registerUser(username, hospName, role, adminId);
+            Gson gson = new Gson();
+            CustomIdentity obj = gson.fromJson(adminId, CustomIdentity.class);
+            CustomIdentity identity = authService.enrollUser(Role.PATIENT, obj, patient);
             return ResponseEntity.status(HttpStatus.CREATED).body(identity);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {

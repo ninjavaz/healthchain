@@ -7,92 +7,93 @@
 "use strict";
 
 const { Contract } = require("fabric-contract-api");
+const PatientResource = require("./model/PatientResource");
 const ClientIdentity = require("fabric-shim").ClientIdentity;
 
-class FabCar extends Contract {
+class HealthchainCode extends Contract {
     async initLedger(ctx) {
         console.info("============= START : Initialize Ledger ===========");
-        const cars = [
-            {
-                size: "small",
-                color: "blue",
-                make: "Toyota",
-                model: "Prius",
-                owner: "Tomoko",
-            },
-            {
-                size: "small",
-                color: "red",
-                make: "Ford",
-                model: "Mustang",
-                owner: "Brad",
-            },
-            {
-                size: "small",
-                color: "green",
-                make: "Hyundai",
-                model: "Tucson",
-                owner: "Jin Soo",
-            },
-            {
-                size: "small",
-                color: "yellow",
-                make: "Volkswagen",
-                model: "Passat",
-                owner: "Max",
-            },
-            {
-                size: "small",
-                color: "black",
-                make: "Tesla",
-                model: "S",
-                owner: "Adriana",
-            },
-            {
-                size: "small",
-                color: "purple",
-                make: "Peugeot",
-                model: "205",
-                owner: "Michel",
-            },
-            {
-                size: "small",
-                color: "white",
-                make: "Chery",
-                model: "S22L",
-                owner: "Aarav",
-            },
-            {
-                size: "small",
-                color: "violet",
-                make: "Fiat",
-                model: "Punto",
-                owner: "Pari",
-            },
-            {
-                size: "huge",
-                color: "indigo",
-                make: "Tata",
-                model: "Nano",
-                owner: "Valeria",
-            },
-            {
-                size: "small",
-                color: "brown",
-                make: "Holden",
-                model: "Barina",
-                owner: "Shotaro",
-            },
-        ];
+        // const cars = [
+        //     {
+        //         size: "small",
+        //         color: "blue",
+        //         make: "Toyota",
+        //         model: "Prius",
+        //         owner: "Tomoko",
+        //     },
+        //     {
+        //         size: "small",
+        //         color: "red",
+        //         make: "Ford",
+        //         model: "Mustang",
+        //         owner: "Brad",
+        //     },
+        //     {
+        //         size: "small",
+        //         color: "green",
+        //         make: "Hyundai",
+        //         model: "Tucson",
+        //         owner: "Jin Soo",
+        //     },
+        //     {
+        //         size: "small",
+        //         color: "yellow",
+        //         make: "Volkswagen",
+        //         model: "Passat",
+        //         owner: "Max",
+        //     },
+        //     {
+        //         size: "small",
+        //         color: "black",
+        //         make: "Tesla",
+        //         model: "S",
+        //         owner: "Adriana",
+        //     },
+        //     {
+        //         size: "small",
+        //         color: "purple",
+        //         make: "Peugeot",
+        //         model: "205",
+        //         owner: "Michel",
+        //     },
+        //     {
+        //         size: "small",
+        //         color: "white",
+        //         make: "Chery",
+        //         model: "S22L",
+        //         owner: "Aarav",
+        //     },
+        //     {
+        //         size: "small",
+        //         color: "violet",
+        //         make: "Fiat",
+        //         model: "Punto",
+        //         owner: "Pari",
+        //     },
+        //     {
+        //         size: "huge",
+        //         color: "indigo",
+        //         make: "Tata",
+        //         model: "Nano",
+        //         owner: "Valeria",
+        //     },
+        //     {
+        //         size: "small",
+        //         color: "brown",
+        //         make: "Holden",
+        //         model: "Barina",
+        //         owner: "Shotaro",
+        //     },
+        // ];
 
-        for (let i = 0; i < cars.length; i++) {
-            cars[i].docType = "car";
-            await ctx.stub.putState(
-                "CAR" + i,
-                Buffer.from(JSON.stringify(cars[i]))
-            );
-            console.info("Added <--> ", cars[i]);
-        }
+        // for (let i = 0; i < cars.length; i++) {
+        //     cars[i].docType = "car";
+        //     await ctx.stub.putState(
+        //         "CAR" + i,
+        //         Buffer.from(JSON.stringify(cars[i]))
+        //     );
+        //     console.info("Added <--> ", cars[i]);
+        // }
         console.info("============= END : Initialize Ledger ===========");
     }
 
@@ -209,11 +210,8 @@ class FabCar extends Contract {
         return JSON.stringify(allResults);
     }
 
-    async getUserRole(ctx) {
-        let clientIdentity = new ClientIdentity(ctx.stub);
-        const role = clientIdentity.getAttributeValue("role");
-        return JSON.stringify(role);
-    }
+
+
 
     // async createUser(ctx, user) {
     //     // let clientIdentity = new ClientIdentity(ctx.stub);
@@ -252,6 +250,61 @@ class FabCar extends Contract {
         await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
         console.info("============= END : changeCarOwner ===========");
     }
+
+    async getResourceForUser(ctx) {
+        console.info("============= START : getResourceForUser ===========");
+        const id = await this.getClientId(ctx);
+        const patient = await ctx.stub.getState(id);
+
+        if (!patient || patient.length === 0) {
+            throw new Error(`${id} does not exist`);
+        }
+
+        return patient.toString();
+    }
+
+    async createPatientResource(ctx, patientResource) {
+        console.info("============= START : Create PatientResource ===========");
+
+        patientResource = JSON.parse(patientResource);
+        this.authorize(ctx, 'ADMIN');
+
+        if (patientResource.resourceType === null || patientResource.resourceType === '') {
+            throw new Error(`resourceType should not be null or empty`);
+        }
+
+        if (patientResource.id === null || patientResource.id === '') {
+            throw new Error(`id should not be null or empty`);
+        }
+
+        const exists = await this.patientResourceExists(ctx, patientResource.id);
+        if (exists) {
+            throw new Error(`The patientResource ${patientResource.id} already exists`);
+        }
+
+        const buffer = Buffer.from(JSON.stringify(patientResource));
+        await ctx.stub.putState(patientResource.id, buffer);
+
+        console.info("============= END : Create PatientResource ===========");
+    }
+
+    async patientResourceExists(ctx, patientResourceId) {
+        const buffer = await ctx.stub.getState(patientResourceId);
+        return (!!buffer && buffer.length > 0);
+    }
+
+    async getUserRole(ctx) {
+        let clientIdentity = new ClientIdentity(ctx.stub);
+        const role = clientIdentity.getAttributeValue("role");
+        return role;
+    }
+
+    async authorize(ctx, role) {
+        if (role !== await this.getUserRole(ctx)) {
+            throw new Error(`User does not have enough permission.`);
+        }
+    }
+
 }
 
-module.exports = FabCar;
+module.exports = HealthchainCode;

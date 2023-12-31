@@ -1,1 +1,1 @@
-java -DCHAINCODE_TRACES_ENABLED=false -jar target/backend-*.jar
+java -DCHAINCODE_TRACES_ENABLED=false -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar target/backend-*.jar

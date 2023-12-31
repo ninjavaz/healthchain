@@ -18,14 +18,14 @@ network:
       caUrl: https://localhost:7054
       certPath: /vagrant/network/organizations/peerOrganizations/hosp1.healthchain.com/ca/ca.hosp1.healthchain.com-cert.pem
       networkConfigPath: /vagrant/network/organizations/peerOrganizations/hosp1.healthchain.com/connection-hosp1.yaml
-      username: hosp1admin
-      password: hosp1healthchain
+      adminUsername: hosp1hosp1admin
+      adminPassword: hosp1hosp1healthchain
       mspName: hosp1MSP
     hosp2:
       caUrl: https://localhost:8054
       certPath: /vagrant/network/organizations/peerOrganizations/hosp2.healthchain.com/ca/ca.hosp2.healthchain.com-cert.pem
       networkConfigPath: /vagrant/network/organizations/peerOrganizations/hosp2.healthchain.com/connection-hosp2.yaml
-      username: hosp2admin
-      password: hosp2healthchain
+      adminUsername: hosp2hosp2admin
+      adminPassword: hosp2hosp2healthchain
       mspName: hosp2MSP
 
