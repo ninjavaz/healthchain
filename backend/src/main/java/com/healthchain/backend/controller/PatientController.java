@@ -1,7 +1,7 @@
 package com.healthchain.backend.controller;
 
 import com.google.gson.Gson;
-import com.healthchain.backend.model.consent.Consent;
+import com.healthchain.backend.model.Consent;
 import com.healthchain.backend.model.network.CustomIdentity;
 import com.healthchain.backend.model.resource.Resource;
 import com.healthchain.backend.model.util.ErrorMessage;

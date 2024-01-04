@@ -1,16 +1,11 @@
 package com.healthchain.backend.controller;
 
 import com.google.gson.Gson;
-import com.healthchain.backend.model.consent.Consent;
 import com.healthchain.backend.model.network.CustomIdentity;
-import com.healthchain.backend.model.network.Role;
 import com.healthchain.backend.model.resource.PatientResource;
-import com.healthchain.backend.model.resource.PractitionerResource;
 import com.healthchain.backend.model.resource.Resource;
 import com.healthchain.backend.model.util.ErrorMessage;
 import com.healthchain.backend.model.util.NetworkProperties;
-import com.healthchain.backend.service.AdminService;
-import com.healthchain.backend.service.PatientService;
 import com.healthchain.backend.service.PractitonerService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;

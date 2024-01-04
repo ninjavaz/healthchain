@@ -1,4 +1,4 @@
-package com.healthchain.backend.model.consent;
+package com.healthchain.backend.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

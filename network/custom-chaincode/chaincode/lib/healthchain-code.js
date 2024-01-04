@@ -236,6 +236,52 @@ class HealthchainCode extends Contract {
         return consent;
     }
 
+    async createDocumentReference(ctx, patientId, date, description, content) {
+        this.authorize(ctx, 'PRACTITIONER');
+
+
+
+        // if (
+        //     practitionerId === null ||
+        //     practitionerId === '' ||
+        //     decision === null ||
+        //     practitionerId === ''
+        // ) {
+        //     throw new Error('fields must not be null or empty');
+        // }
+
+        // console.log(practitionerId);
+        // console.log(practitionerId.toString());
+        // console.log(JSON.stringify(practitionerId));
+        // console.log(JSON.stringify(decision));
+        // console.log(JSON.stringify(date));
+        // console.log(date);
+        // console.log(date.toString());
+
+        // let subject = new Subject(this.getClientId(ctx), '');
+        // let grantee = new Grantee(practitionerId.replace(/"/g, ''), '');
+        // let grantees = [grantee];
+
+        // let consent = new Consent(
+        //     subject.reference + '_' + grantee.reference,
+        //     subject,
+        //     date,
+        //     grantees,
+        //     decision.replace(/"/g, '')
+        // );
+
+        // console.log('createConsent');
+        // console.log(consent.toString());
+        // console.log(grantee.reference.replace(/"/g, ''));
+        // console.log(grantee.reference);
+
+        // const buffer = Buffer.from(JSON.stringify(consent));
+        // await ctx.stub.putState(consent.id, buffer);
+
+        return documentRef;
+
+    }
+
     async getConsentsForPatient(ctx) {
         this.authorize(ctx, 'PATIENT');
 
@@ -322,6 +368,15 @@ class HealthchainCode extends Contract {
         }
         console.log(results);
         return results;
+    }
+
+    async getCounter(ctx) {
+        return await ctx.stub.getState('counter');
+    }
+
+    async increaseCounter(ctx) {
+        let counter = parseInt(await this.getCounter(ctx)) + 1;
+        await ctx.stub.putState('counter', Buffer.from(counter.toString()));
     }
 
 
