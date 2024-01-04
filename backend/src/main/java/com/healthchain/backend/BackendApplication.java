@@ -1,12 +1,9 @@
 package com.healthchain.backend;
 
-import com.healthchain.backend.model.util.NetworkProperties;
-import com.healthchain.backend.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.healthchain.backend.service.AdminService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 
@@ -23,7 +20,7 @@ public class BackendApplication {
     }
 
     @Bean
-    public CommandLineRunner enrollAdmins(AuthService authService) {
+    public CommandLineRunner enrollAdmins(AdminService authService) {
         return args -> {
             authService.enrollAdmin("hosp1");
             authService.enrollAdmin("hosp2");

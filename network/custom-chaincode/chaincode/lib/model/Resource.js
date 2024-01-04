@@ -1,8 +1,3 @@
-/**
- * @author Dominik Nuszkiewicz
- * @desc [The patient resource class]
- */
-
 'use strict';
 
 class Resource {
@@ -38,7 +33,9 @@ class Reference {
     }
 }
 
-module.exports = Resource;
-module.exports = ContactPoint;
-module.exports = Name;
-module.exports = Reference;
+module.exports = {
+    Resource,
+    ContactPoint,
+    Name,
+    Reference
+};

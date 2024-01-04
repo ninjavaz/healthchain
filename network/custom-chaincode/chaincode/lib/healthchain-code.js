@@ -4,97 +4,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use strict";
+'use strict';
 
-const { Contract } = require("fabric-contract-api");
-const PatientResource = require("./model/PatientResource");
-const ClientIdentity = require("fabric-shim").ClientIdentity;
+const { Contract } = require('fabric-contract-api');
+// const PatientResource = require('./model/PatientResource');
+const { Subject, Consent, Grantee } = require('./model/Consent');
+const ClientIdentity = require('fabric-shim').ClientIdentity;
 
 class HealthchainCode extends Contract {
     async initLedger(ctx) {
-        console.info("============= START : Initialize Ledger ===========");
-        // const cars = [
-        //     {
-        //         size: "small",
-        //         color: "blue",
-        //         make: "Toyota",
-        //         model: "Prius",
-        //         owner: "Tomoko",
-        //     },
-        //     {
-        //         size: "small",
-        //         color: "red",
-        //         make: "Ford",
-        //         model: "Mustang",
-        //         owner: "Brad",
-        //     },
-        //     {
-        //         size: "small",
-        //         color: "green",
-        //         make: "Hyundai",
-        //         model: "Tucson",
-        //         owner: "Jin Soo",
-        //     },
-        //     {
-        //         size: "small",
-        //         color: "yellow",
-        //         make: "Volkswagen",
-        //         model: "Passat",
-        //         owner: "Max",
-        //     },
-        //     {
-        //         size: "small",
-        //         color: "black",
-        //         make: "Tesla",
-        //         model: "S",
-        //         owner: "Adriana",
-        //     },
-        //     {
-        //         size: "small",
-        //         color: "purple",
-        //         make: "Peugeot",
-        //         model: "205",
-        //         owner: "Michel",
-        //     },
-        //     {
-        //         size: "small",
-        //         color: "white",
-        //         make: "Chery",
-        //         model: "S22L",
-        //         owner: "Aarav",
-        //     },
-        //     {
-        //         size: "small",
-        //         color: "violet",
-        //         make: "Fiat",
-        //         model: "Punto",
-        //         owner: "Pari",
-        //     },
-        //     {
-        //         size: "huge",
-        //         color: "indigo",
-        //         make: "Tata",
-        //         model: "Nano",
-        //         owner: "Valeria",
-        //     },
-        //     {
-        //         size: "small",
-        //         color: "brown",
-        //         make: "Holden",
-        //         model: "Barina",
-        //         owner: "Shotaro",
-        //     },
-        // ];
-
-        // for (let i = 0; i < cars.length; i++) {
-        //     cars[i].docType = "car";
-        //     await ctx.stub.putState(
-        //         "CAR" + i,
-        //         Buffer.from(JSON.stringify(cars[i]))
-        //     );
-        //     console.info("Added <--> ", cars[i]);
-        // }
-        console.info("============= END : Initialize Ledger ===========");
+        console.info('============= Initialize Ledger ===========');
     }
 
     async queryCar(ctx, carNumber) {
@@ -110,7 +29,7 @@ class HealthchainCode extends Contract {
         let queryString = {};
         queryString.selector = {};
         queryString.selector.size = size;
-        console.log("Querying by size");
+        console.log('Querying by size');
         const buffer = await this.getQueryResultForQueryString(
             ctx,
             JSON.stringify(queryString)
@@ -144,7 +63,9 @@ class HealthchainCode extends Contract {
                 jsonRes.Key = res.value.key;
 
                 try {
-                    jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+                    jsonRes.Record = JSON.parse(
+                        res.value.value.toString('utf8')
+                    );
                 } catch (err) {
                     console.log(err);
                     jsonRes.Record = res.value.value.toString('utf8');
@@ -174,44 +95,41 @@ class HealthchainCode extends Contract {
     // }
 
     async createCar(ctx, carNumber, make, model, color, owner) {
-        console.info("============= START : Create Car ===========");
+        console.info('============= START : Create Car ===========');
 
         const car = {
             color,
-            docType: "car",
+            docType: 'car',
             make,
             model,
             owner,
         };
 
         await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
-        console.info("============= END : Create Car ===========");
+        console.info('============= END : Create Car ===========');
     }
 
-    async queryAllCars(ctx) {
-        const startKey = "";
-        const endKey = "";
-        const allResults = [];
-        for await (const { key, value } of ctx.stub.getStateByRange(
-            startKey,
-            endKey
-        )) {
-            const strValue = Buffer.from(value).toString("utf8");
-            let record;
-            try {
-                record = JSON.parse(strValue);
-            } catch (err) {
-                console.log(err);
-                record = strValue;
-            }
-            allResults.push({ Key: key, Record: record });
-        }
-        console.info(allResults);
-        return JSON.stringify(allResults);
-    }
-
-
-
+    // async queryAllCars(ctx) {
+    //     const startKey = "";
+    //     const endKey = "";
+    //     const allResults = [];
+    //     for await (const { key, value } of ctx.stub.getStateByRange(
+    //         startKey,
+    //         endKey
+    //     )) {
+    //         const strValue = Buffer.from(value).toString("utf8");
+    //         let record;
+    //         try {
+    //             record = JSON.parse(strValue);
+    //         } catch (err) {
+    //             console.log(err);
+    //             record = strValue;
+    //         }
+    //         allResults.push({ Key: key, Record: record });
+    //     }
+    //     console.info(allResults);
+    //     return JSON.stringify(allResults);
+    // }
 
     // async createUser(ctx, user) {
     //     // let clientIdentity = new ClientIdentity(ctx.stub);
@@ -227,84 +145,211 @@ class HealthchainCode extends Contract {
     //     await ctx.stub.putState(clientId, Buffer.from(JSON.stringify(user)));
     // }
 
+    // async changeCarOwner(ctx, carNumber, newOwner) {
+    //     console.info("============= START : changeCarOwner ===========");
 
-    async getClientId(ctx) {
+    //     const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
+    //     if (!carAsBytes || carAsBytes.length === 0) {
+    //         throw new Error(`${carNumber} does not exist`);
+    //     }
+    //     const car = JSON.parse(carAsBytes.toString());
+    //     car.owner = newOwner;
+
+    //     await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
+    //     console.info("============= END : changeCarOwner ===========");
+    // }
+
+    async getResourceForUser(ctx) {
+        const id = this.getClientId(ctx);
+        const resource = await ctx.stub.getState(id);
+
+        if (!resource || resource.length === 0) {
+            throw new Error(`Resource: ${id} does not exist`);
+        }
+
+        return resource.toString();
+    }
+
+    async createResource(ctx, resource) {
+        resource = JSON.parse(resource);
+        this.authorize(ctx, 'ADMIN');
+
+        if (resource.resourceType === null || resource.resourceType === '') {
+            throw new Error('resourceType should not be null or empty');
+        }
+
+        if (resource.id === null || resource.id === '') {
+            throw new Error('id should not be null or empty');
+        }
+
+        const exists = await this.resourceExists(ctx, resource.id);
+        if (exists) {
+            throw new Error(`The resource ${resource.id} already exists`);
+        }
+
+        const buffer = Buffer.from(JSON.stringify(resource));
+        await ctx.stub.putState(resource.id, buffer);
+
+        return resource;
+    }
+
+    async createConsent(ctx, practitionerId, decision, date) {
+        this.authorize(ctx, 'PATIENT');
+
+        if (
+            practitionerId === null ||
+            practitionerId === '' ||
+            decision === null ||
+            practitionerId === ''
+        ) {
+            throw new Error('fields must not be null or empty');
+        }
+
+        console.log(practitionerId);
+        console.log(practitionerId.toString());
+        console.log(JSON.stringify(practitionerId));
+        console.log(JSON.stringify(decision));
+        console.log(JSON.stringify(date));
+        console.log(date);
+        console.log(date.toString());
+
+        let subject = new Subject(this.getClientId(ctx), '');
+        let grantee = new Grantee(practitionerId.replace(/"/g, ''), '');
+        let grantees = [grantee];
+
+        let consent = new Consent(
+            subject.reference + '_' + grantee.reference,
+            subject,
+            date,
+            grantees,
+            decision.replace(/"/g, '')
+        );
+
+        console.log('createConsent');
+        console.log(consent.toString());
+        console.log(grantee.reference.replace(/"/g, ''));
+        console.log(grantee.reference);
+
+        const buffer = Buffer.from(JSON.stringify(consent));
+        await ctx.stub.putState(consent.id, buffer);
+
+        return consent;
+    }
+
+    async getConsentsForPatient(ctx) {
+        this.authorize(ctx, 'PATIENT');
+
+        console.log('getConsentsForPatient');
+
+        const patientId = this.getClientId(ctx);
+        // const resource = await ctx.stub.getState(id);
+
+        // Używamy zapytania do znalezienia wszystkich zgód, które mają w polu Subject.reference id pacjenta
+        const queryString = {
+            selector: {
+                resourceType: 'Consent',
+                'subject.reference': patientId,
+            },
+        };
+
+
+        return this.getObjectsByQueryString(ctx, queryString);
+    }
+
+    // getConsentsForPractitioner(ctx) {
+
+    // }
+
+    async getPatientResourcesForPractitioner(ctx) {
+        this.authorize(ctx, 'PRACTITIONER');
+        const practitionerId = this.getClientId(ctx);
+
+        const queryString = {
+            selector: {
+                grantee: {
+                    $elemMatch: {
+                        reference: practitionerId
+                    }
+                }
+            }
+        };
+
+        let consents = await this.getObjectsByQueryString(ctx, queryString);
+
+        // consents = consents.map(elem=>{elem.subject.reference;});
+        console.log('getPatientResourcesForPractitioner');
+        console.log(consents);
+
+        const results = [];
+
+        for (const elem of consents) {
+            console.log(elem);
+            console.log(elem.subject.reference);
+            console.log(elem.subject.reference.toString());
+
+            const buffer = await ctx.stub.getState(elem.subject.reference);
+            console.log(buffer.toString());
+            if (!!buffer && buffer.length > 0) {
+                console.log('WRZUCAMY');
+                console.log(buffer);
+                results.push(JSON.parse(buffer.toString()));
+            }
+        }
+
+        console.log('REZULTATY');
+        console.log(results);
+
+        return results;
+    }
+
+    async getObjectsByQueryString(ctx, queryString) {
+        const queryResultsIterator = await ctx.stub.getQueryResult(JSON.stringify(queryString));
+        const results = [];
+
+        let result = await queryResultsIterator.next();
+        while (!result.done) {
+            const object = JSON.parse(result.value.value.toString('utf8'));
+            results.push(object);
+            result = await queryResultsIterator.next();
+        }
+
+        await queryResultsIterator.close();
+
+        if (results.length === 0) {
+            throw new Error(
+                `No results found for queryString: ${queryString}`
+            );
+        }
+        console.log(results);
+        return results;
+    }
+
+
+    //UTILS
+    async resourceExists(ctx, resourceId) {
+        const buffer = await ctx.stub.getState(resourceId);
+        return !!buffer && buffer.length > 0;
+    }
+
+    getUserRole(ctx) {
+        let clientIdentity = new ClientIdentity(ctx.stub);
+        const role = clientIdentity.getAttributeValue('role');
+        return role;
+    }
+
+    authorize(ctx, role) {
+        if (role !== this.getUserRole(ctx)) {
+            throw new Error('User does not have enough permission.');
+        }
+    }
+
+    getClientId(ctx) {
         let clientIdentity = new ClientIdentity(ctx.stub);
         let identity = clientIdentity.getID().split('::');
         identity = identity[1].split('/')[2].split('=');
         return identity[1].toString('utf8');
     }
-
-
-
-    async changeCarOwner(ctx, carNumber, newOwner) {
-        console.info("============= START : changeCarOwner ===========");
-
-        const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
-        if (!carAsBytes || carAsBytes.length === 0) {
-            throw new Error(`${carNumber} does not exist`);
-        }
-        const car = JSON.parse(carAsBytes.toString());
-        car.owner = newOwner;
-
-        await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
-        console.info("============= END : changeCarOwner ===========");
-    }
-
-    async getResourceForUser(ctx) {
-        console.info("============= START : getResourceForUser ===========");
-        const id = await this.getClientId(ctx);
-        const patient = await ctx.stub.getState(id);
-
-        if (!patient || patient.length === 0) {
-            throw new Error(`${id} does not exist`);
-        }
-
-        return patient.toString();
-    }
-
-    async createPatientResource(ctx, patientResource) {
-        console.info("============= START : Create PatientResource ===========");
-
-        patientResource = JSON.parse(patientResource);
-        this.authorize(ctx, 'ADMIN');
-
-        if (patientResource.resourceType === null || patientResource.resourceType === '') {
-            throw new Error(`resourceType should not be null or empty`);
-        }
-
-        if (patientResource.id === null || patientResource.id === '') {
-            throw new Error(`id should not be null or empty`);
-        }
-
-        const exists = await this.patientResourceExists(ctx, patientResource.id);
-        if (exists) {
-            throw new Error(`The patientResource ${patientResource.id} already exists`);
-        }
-
-        const buffer = Buffer.from(JSON.stringify(patientResource));
-        await ctx.stub.putState(patientResource.id, buffer);
-
-        console.info("============= END : Create PatientResource ===========");
-    }
-
-    async patientResourceExists(ctx, patientResourceId) {
-        const buffer = await ctx.stub.getState(patientResourceId);
-        return (!!buffer && buffer.length > 0);
-    }
-
-    async getUserRole(ctx) {
-        let clientIdentity = new ClientIdentity(ctx.stub);
-        const role = clientIdentity.getAttributeValue("role");
-        return role;
-    }
-
-    async authorize(ctx, role) {
-        if (role !== await this.getUserRole(ctx)) {
-            throw new Error(`User does not have enough permission.`);
-        }
-    }
-
 }
 
 module.exports = HealthchainCode;
+
