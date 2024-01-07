@@ -23,7 +23,8 @@ public class TransactionService {
     public <T> T evaluateTransaction(TransactionType transactionType,
                                       Class<T> resultClass,
                                       String hospName,
-                                      CustomIdentity customIdentity) throws Exception {
+                                      CustomIdentity customIdentity,
+                                      Object... args) throws Exception {
         NetworkProperties.HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);
 
         Identity identity = Identities.newX509Identity(customIdentity.getMspId(), Identities.readX509Certificate(customIdentity.getCredentials().getCertificate()), Identities.readPrivateKey(customIdentity.getCredentials().getPrivateKey()));
@@ -37,16 +38,37 @@ public class TransactionService {
         Network network = gateway.getNetwork(networkProps.getChannel());
         Contract contract = network.getContract(networkProps.getContract());
 
+
         // Gson instance
         Gson gson = new Gson();
-        return gson.fromJson(new String(contract.evaluateTransaction(transactionType.getValue())), resultClass);
+
+        // Convert object to JSON string
+        String[] argsJson = new String[args.length];
+
+        for (int i = 0; i < args.length; i++) {
+            argsJson[i] = gson.toJson(args[i]);
+        }
+
+        byte[] result = contract.evaluateTransaction(transactionType.getValue(), argsJson);
+
+        System.out.println("TESTOWANIE");
+        System.out.println(new String(result));
+
+        return gson.fromJson(new String(result), resultClass);
+
+
+
+
+//        // Gson instance
+//        Gson gson = new Gson();
+//        return gson.fromJson(new String(contract.evaluateTransaction(transactionType.getValue())), resultClass);
 
     }
 
     public <T> List<T> evaluateTransactionWithList(TransactionType transactionType,
                                                  Class<T> resultClass,
                                                  String hospName,
-                                                 CustomIdentity customIdentity) throws Exception {
+                                                 CustomIdentity customIdentity, Object... args) throws Exception {
         NetworkProperties.HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);
 
         Identity identity = Identities.newX509Identity(customIdentity.getMspId(), Identities.readX509Certificate(customIdentity.getCredentials().getCertificate()), Identities.readPrivateKey(customIdentity.getCredentials().getPrivateKey()));
@@ -61,13 +83,25 @@ public class TransactionService {
         Contract contract = network.getContract(networkProps.getContract());
 
         // Gson instance
+//        Gson gson = new Gson();
+//        String result = new String(contract.evaluateTransaction(transactionType.getValue()));
+        // Gson instance
         Gson gson = new Gson();
-        String result = new String(contract.evaluateTransaction(transactionType.getValue()));
+
+        // Convert object to JSON string
+        String[] argsJson = new String[args.length];
+
+        for (int i = 0; i < args.length; i++) {
+            argsJson[i] = gson.toJson(args[i]);
+        }
+
+        byte[] result = contract.evaluateTransaction(transactionType.getValue(), argsJson);
+
         System.out.println("RESULT_EVALUATE");
-        System.out.println(result);
+        System.out.println(new String(result));
 
         Type arrayType = TypeToken.getArray(resultClass).getType();
-        T[] array = gson.fromJson(result, arrayType);
+        T[] array = gson.fromJson(new String(result), arrayType);
 
 //                Type listType = new TypeToken<List<resultClass>>(){}.getType();
 //        List<resultClass> resultList = gson.fromJson(result, listType);
@@ -110,7 +144,6 @@ public class TransactionService {
         // Gson instance
         Gson gson = new Gson();
 
-//        String[] argsJson = gson.toJson(arg);
         // Convert object to JSON string
         String[] argsJson = new String[args.length];
 

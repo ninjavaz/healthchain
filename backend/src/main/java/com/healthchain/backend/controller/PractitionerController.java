@@ -1,9 +1,11 @@
 package com.healthchain.backend.controller;
 
 import com.google.gson.Gson;
+import com.healthchain.backend.model.dto.DocumentRefDTO;
+import com.healthchain.backend.model.entity.DocumentReference;
 import com.healthchain.backend.model.network.CustomIdentity;
-import com.healthchain.backend.model.resource.PatientResource;
-import com.healthchain.backend.model.resource.Resource;
+import com.healthchain.backend.model.entity.resource.PatientResource;
+import com.healthchain.backend.model.entity.resource.Resource;
 import com.healthchain.backend.model.util.ErrorMessage;
 import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.service.PractitonerService;
@@ -26,14 +28,12 @@ public class PractitionerController {
     @Autowired
     private NetworkProperties networkProperties;
 
-
-    //PRACTITIONER PERMISSIONED
     @RequestMapping(value = "/Practitioner", method = RequestMethod.GET)
-    public ResponseEntity<?> getPractitonerResource(@RequestHeader("Authorization") String identity) {
+    public ResponseEntity<?> getPractitonerResource(@RequestHeader("Authorization") String identity, @RequestParam("userId") String userId) {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
-            Resource practitioner = this.practitonerService.getResource(obj);
+            Resource practitioner = this.practitonerService.getResource(obj, userId);
             return ResponseEntity.status(HttpStatus.OK).body(practitioner);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
@@ -44,12 +44,44 @@ public class PractitionerController {
     }
 
     @RequestMapping(value = "/Patient", method = RequestMethod.GET)
-    public ResponseEntity<?> getPatientResourcesForPractitioner(@RequestHeader("Authorization") String identity) {
+    public ResponseEntity<?> getPatientResourcesForPractitioner(@RequestHeader("Authorization") String identity, @RequestParam("userId") String userId) {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
-            List<PatientResource> patients = this.practitonerService.getPatientResourcesForPractitioner(obj);
+            List<PatientResource> patients = this.practitonerService.getPatientResourcesForPractitioner(obj, userId);
             return ResponseEntity.status(HttpStatus.OK).body(patients);
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
+            return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @RequestMapping(value = "/DocumentReference", method = RequestMethod.GET)
+    public ResponseEntity<?> getDocumentReferences(@RequestHeader("Authorization") String identity, @RequestParam("userId") String userId) {
+        try {
+            Gson gson = new Gson();
+            CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
+            List<DocumentReference> docRefs = this.practitonerService.getDocumentReferences(obj, userId);
+            return ResponseEntity.status(HttpStatus.OK).body(docRefs);
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
+            return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @RequestMapping(value = "/DocumentReference", method = RequestMethod.POST)
+    public ResponseEntity<?> saveDocumentReference(@RequestHeader("Authorization") String identity,
+                                                   @RequestBody DocumentRefDTO documentRefDTO
+                                                   ) {
+        try {
+            Gson gson = new Gson();
+            CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
+            DocumentReference documentRef = this.practitonerService.saveDocumentReference(obj, documentRefDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(documentRef);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 e.printStackTrace();

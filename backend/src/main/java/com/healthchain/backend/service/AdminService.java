@@ -1,8 +1,9 @@
 package com.healthchain.backend.service;
 
-import com.google.gson.Gson;
+import com.healthchain.backend.model.Mapper;
+import com.healthchain.backend.model.dto.ResourceDTO;
 import com.healthchain.backend.model.network.*;
-import com.healthchain.backend.model.resource.Resource;
+import com.healthchain.backend.model.entity.resource.Resource;
 import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.model.util.NetworkProperties.HospInfo;
 import lombok.extern.log4j.Log4j;
@@ -27,6 +28,8 @@ public class AdminService {
     private NetworkProperties networkProps;
     @Autowired
     private TransactionService transactionService;
+    @Autowired
+    private Mapper mapper;
 
     /**
      * Method used only while starting an app to create current admin Identities and save them in the wallet.
@@ -79,7 +82,18 @@ public class AdminService {
      * @param resource - resource
      * @return - customIdentity of created user
      */
-    public CustomIdentity enrollUser(Role role, CustomIdentity adminId, Resource resource) throws Exception {
+    public CustomIdentity enrollUser(Role role, CustomIdentity adminId, ResourceDTO resourceDTO) throws Exception {
+        Resource resource = null;
+
+        switch(role) {
+            case PATIENT:
+                resource = this.mapper.mapToPatientResource(resourceDTO);
+                break;
+            case PRACTITIONER:
+                resource = this.mapper.mapToPractitionerResource(resourceDTO);
+                break;
+        }
+
 
         String hospName = resource.getManagingOrganization().getIdentifier();
         HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);

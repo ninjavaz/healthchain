@@ -4,11 +4,11 @@ class DocumentReference {
     constructor(id, subject, date, author, description, content) {
         this.resourceType = 'DocumentReference';
         this.id = id;
-        this.subject = subject;
+        this.subject = subject; //Reference
         this.date = date;
         this.author = author;
         this.description = description;
-        this.content = content;
+        this.content = content; //List<Attachment>
     }
 }
 

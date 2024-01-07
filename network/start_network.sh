@@ -254,9 +254,9 @@ CC_SRC_PATH="NA"
 #language for chaincode
 CC_SRC_LANGUAGE="javascript"
 # Chaincode version
-CC_VERSION="42.0"
+CC_VERSION="61.0"
 # Chaincode definition sequence
-CC_SEQUENCE=41
+CC_SEQUENCE=61
 # chaincode init function, default is "NA"
 CC_INIT_FCN="initLedger"
 # endorsement policy defaults to "NA". This would allow chaincodes to use the majority default policy.

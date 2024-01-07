@@ -10,6 +10,9 @@ public enum TransactionType {
     getResourceForUser("getResourceForUser"),
     createConsent("createConsent"),
     getConsentsForPatient("getConsentsForPatient"),
-    getPatientResourcesForPractitioner("getPatientResourcesForPractitioner");
+    getPatientResourcesForPractitioner("getPatientResourcesForPractitioner"),
+    createDocumentReference("createDocumentReference"),
+    getDocumentReferencesForPatient("getDocumentReferencesForPatient"),
+    getDocumentReferencesForPractitioner("getDocumentReferencesForPractitioner");
     private final String value;
 }

@@ -1,9 +1,11 @@
 package com.healthchain.backend.controller;
 
 import com.google.gson.Gson;
-import com.healthchain.backend.model.Consent;
+import com.healthchain.backend.model.dto.ConsentDTO;
+import com.healthchain.backend.model.entity.Consent;
+import com.healthchain.backend.model.entity.DocumentReference;
 import com.healthchain.backend.model.network.CustomIdentity;
-import com.healthchain.backend.model.resource.Resource;
+import com.healthchain.backend.model.entity.resource.Resource;
 import com.healthchain.backend.model.util.ErrorMessage;
 import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.service.PatientService;
@@ -25,14 +27,44 @@ public class PatientController {
     @Autowired
     private NetworkProperties networkProperties;
 
-    //PATIENT PERMISSIONED
     @RequestMapping(value = "/Patient", method = RequestMethod.GET)
-    public ResponseEntity<?> getPatientResource(@RequestHeader("Authorization") String identity) {
+    public ResponseEntity<?> getPatientResource(@RequestHeader("Authorization") String identity, @RequestParam("userId") String userId) {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
-            Resource patient = this.patientService.getResource(obj);
+            Resource patient = this.patientService.getResource(obj, userId);
             return ResponseEntity.status(HttpStatus.OK).body(patient);
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
+            return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @RequestMapping(value = "/Consent", method = RequestMethod.GET)
+    public ResponseEntity<?> getConsents(@RequestHeader("Authorization") String identity, @RequestParam("userId") String userId) {
+        try {
+            Gson gson = new Gson();
+            CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
+            List<Consent> consents = this.patientService.getConsents(obj, userId);
+            return ResponseEntity.status(HttpStatus.OK).body(consents);
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
+            return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @RequestMapping(value = "/DocumentReference", method = RequestMethod.GET)
+    public ResponseEntity<?> getDocumentReferences(@RequestHeader("Authorization") String identity,
+                                                   @RequestParam("userId") String userId) {
+        try {
+            Gson gson = new Gson();
+            CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
+            List<DocumentReference> consents = this.patientService.getDocumentReferences(obj, userId);
+            return ResponseEntity.status(HttpStatus.OK).body(consents);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 e.printStackTrace();
@@ -43,27 +75,12 @@ public class PatientController {
 
     @RequestMapping(value = "/Consent", method = RequestMethod.POST)
     public ResponseEntity<?> saveConsent(@RequestHeader("Authorization") String identity,
-                                                @RequestParam("practitionerId") String practitionerId) {
+                                                @RequestBody ConsentDTO consentDTO) {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
-            Consent consent = this.patientService.saveConsent(obj, practitionerId);
+            Consent consent = this.patientService.saveConsent(obj, consentDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(consent);
-        } catch (Exception e) {
-            if (log.isDebugEnabled()) {
-                e.printStackTrace();
-            }
-            return buildErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e);
-        }
-    }
-
-    @RequestMapping(value = "/Consent", method = RequestMethod.GET)
-    public ResponseEntity<?> getConsents(@RequestHeader("Authorization") String identity) {
-        try {
-            Gson gson = new Gson();
-            CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
-            List<Consent> consent = this.patientService.getConsents(obj);
-            return ResponseEntity.status(HttpStatus.OK).body(consent);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 e.printStackTrace();

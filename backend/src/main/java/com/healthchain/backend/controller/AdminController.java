@@ -1,15 +1,13 @@
 package com.healthchain.backend.controller;
 
 import com.google.gson.Gson;
+import com.healthchain.backend.model.Mapper;
+import com.healthchain.backend.model.dto.ResourceDTO;
 import com.healthchain.backend.model.network.CustomIdentity;
 import com.healthchain.backend.model.network.Role;
-import com.healthchain.backend.model.resource.PatientResource;
-import com.healthchain.backend.model.resource.PractitionerResource;
 import com.healthchain.backend.model.util.ErrorMessage;
 import com.healthchain.backend.model.util.NetworkProperties;
 import com.healthchain.backend.service.AdminService;
-import com.healthchain.backend.service.PatientService;
-import com.healthchain.backend.service.PractitonerService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,21 +24,18 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
     @Autowired
-    private PatientService patientService;
-    @Autowired
-    private PractitonerService practitonerService;
-    @Autowired
     private NetworkProperties networkProperties;
+    @Autowired
+    private Mapper mapper;
 
-    //ADMIN PERMISSIONED
     @RequestMapping(value = "/Patient", method = RequestMethod.POST)
     public ResponseEntity<?> savePatientResource(@RequestHeader("Authorization") String adminId,
-                                                 @RequestBody PatientResource patient) {
+                                                 @RequestBody ResourceDTO resourceDTO) {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(adminId, CustomIdentity.class);
-            patient.setResourceType("Patient");
-            CustomIdentity identity = this.adminService.enrollUser(Role.PATIENT, obj, patient);
+//            patient.setResourceType("Patient");
+            CustomIdentity identity = this.adminService.enrollUser(Role.PATIENT, obj, resourceDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(identity);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
@@ -52,13 +47,12 @@ public class AdminController {
 
     @RequestMapping(value = "/Practitioner", method = RequestMethod.POST)
     public ResponseEntity<?> savePractitionerResource(@RequestHeader("Authorization") String adminId,
-                                                      @RequestBody PractitionerResource practitioner) {
+                                                      @RequestBody ResourceDTO resourceDTO) {
 
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(adminId, CustomIdentity.class);
-            practitioner.setResourceType("Practitioner");
-            CustomIdentity identity = this.adminService.enrollUser(Role.PRACTITIONER, obj, practitioner);
+            CustomIdentity identity = this.adminService.enrollUser(Role.PRACTITIONER, obj, resourceDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(identity);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {

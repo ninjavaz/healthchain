@@ -4,182 +4,72 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-'use strict';
+"use strict";
 
-const { Contract } = require('fabric-contract-api');
+const { Contract } = require("fabric-contract-api");
 // const PatientResource = require('./model/PatientResource');
-const { Subject, Consent, Grantee } = require('./model/Consent');
-const ClientIdentity = require('fabric-shim').ClientIdentity;
+const { Subject, Consent, Grantee } = require("./model/Consent");
+const ClientIdentity = require("fabric-shim").ClientIdentity;
 
 class HealthchainCode extends Contract {
     async initLedger(ctx) {
-        console.info('============= Initialize Ledger ===========');
-    }
+        console.info("============= Initialize Ledger ===========");
+        
 
-    async queryCar(ctx, carNumber) {
-        const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
-        if (!carAsBytes || carAsBytes.length === 0) {
-            throw new Error(`${carNumber} does not exist`);
-        }
-        console.log(carAsBytes.toString());
-        return carAsBytes.toString();
-    }
+        // Check if the counter already exists
+        const counterAsBytes = await ctx.stub.getState("counter");
+        if (!counterAsBytes || counterAsBytes.length === 0) {
+            let counterValue = 0;
 
-    async queryCarBySize(ctx, size) {
-        let queryString = {};
-        queryString.selector = {};
-        queryString.selector.size = size;
-        console.log('Querying by size');
-        const buffer = await this.getQueryResultForQueryString(
-            ctx,
-            JSON.stringify(queryString)
-        );
-        let asset = JSON.parse(buffer.toString());
-        if (!asset || asset.length === 0) {
-            throw new Error(`${size} does not exist`);
-        }
-        return asset;
-    }
+            // Create or update the counter JSON object
+            let counter = counterValue
 
-    async getQueryResultForQueryString(ctx, queryString) {
-        let resultsIterator = await ctx.stub.getQueryResult(queryString);
-        console.info('getQueryResultForQueryString <--> ', resultsIterator);
-        let results = await this.getAllPatientResults(resultsIterator, false);
-        return JSON.stringify(results);
-    }
+            // Store the counter JSON in the ledger
+            await ctx.stub.putState(
+                "counter",
+                Buffer.from(JSON.stringify(counter))
+            );
+            console.info("Counter not found, initializing to 0");
+        } else {
 
-    async getAllPatientResults(iterator, isHistory) {
-        let allResults = [];
-        while (true) {
-            let res = await iterator.next();
+            // let counterValue = 0;
 
-            if (res.value && res.value.value.toString()) {
-                let jsonRes = {};
-                console.log(res.value.value.toString('utf8'));
+            // // Create or update the counter JSON object
+            // let counter = counterValue
 
-                if (isHistory && isHistory === true) {
-                    jsonRes.Timestamp = res.value.timestamp;
-                }
-                jsonRes.Key = res.value.key;
+            // // Store the counter JSON in the ledger
+            // await ctx.stub.putState(
+            //     "counter",
+            //     Buffer.from(JSON.stringify(counter))
+            // );
 
-                try {
-                    jsonRes.Record = JSON.parse(
-                        res.value.value.toString('utf8')
-                    );
-                } catch (err) {
-                    console.log(err);
-                    jsonRes.Record = res.value.value.toString('utf8');
-                }
-                allResults.push(jsonRes);
-            }
-            if (res.done) {
-                console.log('end of data');
-                await iterator.close();
-                console.info(allResults);
-                return allResults;
-            }
-        }
-    }
-
-    // //Read patients based on firstName
-    // async queryPatientsByFirstName(ctx, firstName) {
-    //     let queryString = {};
-    //     queryString.selector = {};
-    //     queryString.selector.docType = 'patient';
-    //     queryString.selector.firstName = firstName;
-    //     const buffer = await this.getQueryResultForQueryString(ctx, JSON.stringify(queryString));
-    //     let asset = JSON.parse(buffer.toString());
-    //     return asset;
-
-    //     // return this.fetchLimitedFields(asset);
-    // }
-
-    async createCar(ctx, carNumber, make, model, color, owner) {
-        console.info('============= START : Create Car ===========');
-
-        const car = {
-            color,
-            docType: 'car',
-            make,
-            model,
-            owner,
-        };
-
-        await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
-        console.info('============= END : Create Car ===========');
-    }
-
-    // async queryAllCars(ctx) {
-    //     const startKey = "";
-    //     const endKey = "";
-    //     const allResults = [];
-    //     for await (const { key, value } of ctx.stub.getStateByRange(
-    //         startKey,
-    //         endKey
-    //     )) {
-    //         const strValue = Buffer.from(value).toString("utf8");
-    //         let record;
-    //         try {
-    //             record = JSON.parse(strValue);
-    //         } catch (err) {
-    //             console.log(err);
-    //             record = strValue;
-    //         }
-    //         allResults.push({ Key: key, Record: record });
-    //     }
-    //     console.info(allResults);
-    //     return JSON.stringify(allResults);
-    // }
-
-    // async createUser(ctx, user) {
-    //     // let clientIdentity = new ClientIdentity(ctx.stub);
-    //     const clientId = getClientId(ctx)
-    //     const user = {
-    //         color,
-    //         docType: "car",
-    //         make,
-    //         model,
-    //         owner,
-    //     };
-
-    //     await ctx.stub.putState(clientId, Buffer.from(JSON.stringify(user)));
-    // }
-
-    // async changeCarOwner(ctx, carNumber, newOwner) {
-    //     console.info("============= START : changeCarOwner ===========");
-
-    //     const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
-    //     if (!carAsBytes || carAsBytes.length === 0) {
-    //         throw new Error(`${carNumber} does not exist`);
-    //     }
-    //     const car = JSON.parse(carAsBytes.toString());
-    //     car.owner = newOwner;
-
-    //     await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
-    //     console.info("============= END : changeCarOwner ===========");
-    // }
-
-    async getResourceForUser(ctx) {
-        const id = this.getClientId(ctx);
-        const resource = await ctx.stub.getState(id);
-
-        if (!resource || resource.length === 0) {
-            throw new Error(`Resource: ${id} does not exist`);
+            console.info(`Counter found, current value is ${counterAsBytes.toString()}`);
         }
 
-        return resource.toString();
+        // let counter = await ctx.stub.getState("counter");
+        // if (counter.toString() === 'NaN') {
+        //     console.log("NULL");
+        //     // await ctx.stub.putState('counter', Buffer.from("0"));
+        // } else {
+        //     console.log((counter+1).toString());
+        //     // await ctx.stub.putState('counter', Buffer.from((counter+1).toString()));
+        // }
+        // console.log(counter);
+        // console.log("COUNTER");
+        // console.log(counter.toString());
+        // await ctx.stub.putState("counter", Buffer.from(counter.toString()));
     }
 
     async createResource(ctx, resource) {
         resource = JSON.parse(resource);
-        this.authorize(ctx, 'ADMIN');
+        this.authorize(ctx, "ADMIN");
 
-        if (resource.resourceType === null || resource.resourceType === '') {
-            throw new Error('resourceType should not be null or empty');
+        if (resource.resourceType === null || resource.resourceType === "") {
+            throw new Error("resourceType should not be null or empty");
         }
 
-        if (resource.id === null || resource.id === '') {
-            throw new Error('id should not be null or empty');
+        if (resource.id === null || resource.id === "") {
+            throw new Error("id should not be null or empty");
         }
 
         const exists = await this.resourceExists(ctx, resource.id);
@@ -193,42 +83,47 @@ class HealthchainCode extends Contract {
         return resource;
     }
 
-    async createConsent(ctx, practitionerId, decision, date) {
-        this.authorize(ctx, 'PATIENT');
+    async createConsent(ctx, consent) {
+        this.authorize(ctx, "PATIENT");
+
+        consent = JSON.parse(consent);
+        console.log("CONSENT");
+        console.log(consent);
+        const granteeId = consent.grantee[0].reference;
 
         if (
-            practitionerId === null ||
-            practitionerId === '' ||
-            decision === null ||
-            practitionerId === ''
+            granteeId === null ||
+            granteeId === ""
         ) {
-            throw new Error('fields must not be null or empty');
+            throw new Error("fields must not be null or empty");
         }
 
-        console.log(practitionerId);
-        console.log(practitionerId.toString());
-        console.log(JSON.stringify(practitionerId));
-        console.log(JSON.stringify(decision));
-        console.log(JSON.stringify(date));
-        console.log(date);
-        console.log(date.toString());
+        const userId = consent.subject.reference;
+        this.authenticate(ctx, userId);
 
-        let subject = new Subject(this.getClientId(ctx), '');
-        let grantee = new Grantee(practitionerId.replace(/"/g, ''), '');
-        let grantees = [grantee];
 
-        let consent = new Consent(
-            subject.reference + '_' + grantee.reference,
-            subject,
-            date,
-            grantees,
-            decision.replace(/"/g, '')
-        );
+        const queryString = {
+            selector: {
+                resourceType: "Consent",
+                "subject.reference": userId,
+                grantee: {
+                    $elemMatch: {
+                        reference: granteeId,
+                    },
+                },
+            },
+        };
+        console.log("QUERY_SELECTOR");
+        console.log(queryString);
+        let consents = await this.getObjectsByQueryString(ctx, queryString);
+        if (consents.length !== 0) {
+            throw new Error(`Consent of ${userId} for practitioner ${granteeId} already exists`);
+        }
 
-        console.log('createConsent');
-        console.log(consent.toString());
-        console.log(grantee.reference.replace(/"/g, ''));
-        console.log(grantee.reference);
+        consent.id = (await this.getNextCounter(ctx)).toString();
+        console.log("CONSENT1");
+        console.log(consent);
+        console.log(consent.id);
 
         const buffer = Buffer.from(JSON.stringify(consent));
         await ctx.stub.putState(consent.id, buffer);
@@ -236,94 +131,158 @@ class HealthchainCode extends Contract {
         return consent;
     }
 
-    async createDocumentReference(ctx, patientId, date, description, content) {
-        this.authorize(ctx, 'PRACTITIONER');
+    async createDocumentReference(ctx, docRef) {
+        this.authorize(ctx, "PRACTITIONER");
+
+        //1. sprawdzenie czy pacjent o danym id istnieje
+        //jesli tak => utworz DocRef gdzie subject.reference = patientID i id_DocRef = getNextCounter
+        //jesli nie => zwroc info ze pacjent o danym id nie istnieje
 
 
+        console.log("DOCUMENT_REF_HELLO");
 
-        // if (
-        //     practitionerId === null ||
-        //     practitionerId === '' ||
-        //     decision === null ||
-        //     practitionerId === ''
-        // ) {
-        //     throw new Error('fields must not be null or empty');
-        // }
+        docRef = JSON.parse(docRef);
 
-        // console.log(practitionerId);
-        // console.log(practitionerId.toString());
-        // console.log(JSON.stringify(practitionerId));
-        // console.log(JSON.stringify(decision));
-        // console.log(JSON.stringify(date));
-        // console.log(date);
-        // console.log(date.toString());
+        if (
+            docRef.resourceType === null ||
+            docRef.resourceType == ""
+        ) {
+            throw new Error(
+                "Field resourceType must not be null or empty"
+            );
+        }
 
-        // let subject = new Subject(this.getClientId(ctx), '');
-        // let grantee = new Grantee(practitionerId.replace(/"/g, ''), '');
-        // let grantees = [grantee];
+        const userId = docRef.author[0].reference;
+        this.authenticate(ctx, userId);
 
-        // let consent = new Consent(
-        //     subject.reference + '_' + grantee.reference,
-        //     subject,
-        //     date,
-        //     grantees,
-        //     decision.replace(/"/g, '')
-        // );
+        const exists = await this.resourceExists(ctx, docRef.subject.reference);
+        if (!exists) {
+            throw new Error(
+                `Patient: ${docRef.subject.reference} does not exists`
+            );
+        }
 
-        // console.log('createConsent');
-        // console.log(consent.toString());
-        // console.log(grantee.reference.replace(/"/g, ''));
-        // console.log(grantee.reference);
+        console.log("DOCUMENT_REF_HELLO");
+        console.log(docRef);
 
-        // const buffer = Buffer.from(JSON.stringify(consent));
-        // await ctx.stub.putState(consent.id, buffer);
+        // docRef.author[0].reference = userId;
+        docRef.id = (await this.getNextCounter(ctx)).toString();;
 
-        return documentRef;
+        console.log(docRef);
 
+        const buffer = Buffer.from(JSON.stringify(docRef));
+        await ctx.stub.putState(docRef.id, buffer);
+
+        return docRef;
     }
 
-    async getConsentsForPatient(ctx) {
-        this.authorize(ctx, 'PATIENT');
+    async getResourceForUser(ctx, userId) {
+        this.authenticate(ctx, userId);
 
-        console.log('getConsentsForPatient');
+        const resource = await ctx.stub.getState(userId.replace(/"/g, ""));
+        if (!resource || resource.length === 0) {
+            throw new Error(`Resource for: ${userId} does not exist`);
+        }
 
-        const patientId = this.getClientId(ctx);
-        // const resource = await ctx.stub.getState(id);
+        return JSON.parse(resource.toString());
+    }
 
-        // Używamy zapytania do znalezienia wszystkich zgód, które mają w polu Subject.reference id pacjenta
+    async getConsentsForPatient(ctx, userId) {
+        this.authorize(ctx, "PATIENT");
+
+        this.authenticate(ctx, userId);
+
         const queryString = {
             selector: {
-                resourceType: 'Consent',
-                'subject.reference': patientId,
+                resourceType: "Consent",
+                "subject.reference": userId.replace(/"/g, ""),
             },
         };
-
 
         return this.getObjectsByQueryString(ctx, queryString);
     }
 
-    // getConsentsForPractitioner(ctx) {
+    async getDocumentReferencesForPatient(ctx, userId) {
+        this.authorize(ctx, "PATIENT");
 
-    // }
-
-    async getPatientResourcesForPractitioner(ctx) {
-        this.authorize(ctx, 'PRACTITIONER');
-        const practitionerId = this.getClientId(ctx);
+        this.authenticate(ctx, userId);
 
         const queryString = {
             selector: {
+                resourceType: "DocumentReference",
+                "subject.reference": userId.replace(/"/g, ""),
+            },
+        };
+
+        return this.getObjectsByQueryString(ctx, queryString);
+    }
+
+    async getDocumentReferencesForPractitioner(ctx, userId) {
+        this.authorize(ctx, "PRACTITIONER");
+
+        // this.authenticate(ctx, userId);
+
+        const practitionerId = await this.getClientId(ctx);
+
+        const queryString = {
+            selector: {
+                resourceType: "Consent",
                 grantee: {
                     $elemMatch: {
-                        reference: practitionerId
-                    }
-                }
-            }
+                        reference: practitionerId,
+                    },
+                },
+            },
+        };
+
+        let consents = await this.getObjectsByQueryString(ctx, queryString);
+        const results = [];
+
+
+// let valueToCheck = "someValue"; // replace with the value you're looking for
+
+
+        let hasValue = consents.some(elem => {
+            // Checking if elem.subject and elem.subject.reference exist and then comparing
+            console.log(elem.subject.reference);
+            console.log(elem.subject);
+            return elem.subject && elem.subject.reference === userId.replace(/"/g, "");
+        });
+
+        if (!hasValue) {
+            throw new Error(`You do not have access to: ${userId} EHR`);
+        }
+
+        const queryString1 = {
+            selector: {
+                resourceType: "DocumentReference",
+                "subject.reference": userId.replace(/"/g, "")
+            },
+        };
+
+        return this.getObjectsByQueryString(ctx, queryString1);
+
+    }
+
+    async getPatientResourcesForPractitioner(ctx, userId) {
+        this.authorize(ctx, "PRACTITIONER");
+
+        this.authenticate(ctx, userId);
+
+        const queryString = {
+            selector: {
+                resourceType: "Consent",
+                grantee: {
+                    $elemMatch: {
+                        reference: userId.replace(/"/g, ""),
+                    },
+                },
+            },
         };
 
         let consents = await this.getObjectsByQueryString(ctx, queryString);
 
-        // consents = consents.map(elem=>{elem.subject.reference;});
-        console.log('getPatientResourcesForPractitioner');
+        console.log("getPatientResourcesForPractitioner");
         console.log(consents);
 
         const results = [];
@@ -336,49 +295,65 @@ class HealthchainCode extends Contract {
             const buffer = await ctx.stub.getState(elem.subject.reference);
             console.log(buffer.toString());
             if (!!buffer && buffer.length > 0) {
-                console.log('WRZUCAMY');
+                console.log("WRZUCAMY");
                 console.log(buffer);
                 results.push(JSON.parse(buffer.toString()));
             }
         }
 
-        console.log('REZULTATY');
+        console.log("REZULTATY");
         console.log(results);
 
         return results;
     }
 
+    //ONCHAIN METHODS
     async getObjectsByQueryString(ctx, queryString) {
-        const queryResultsIterator = await ctx.stub.getQueryResult(JSON.stringify(queryString));
+        const queryResultsIterator = await ctx.stub.getQueryResult(
+            JSON.stringify(queryString)
+        );
         const results = [];
 
         let result = await queryResultsIterator.next();
         while (!result.done) {
-            const object = JSON.parse(result.value.value.toString('utf8'));
+            const object = JSON.parse(result.value.value.toString("utf8"));
             results.push(object);
             result = await queryResultsIterator.next();
         }
 
         await queryResultsIterator.close();
 
-        if (results.length === 0) {
-            throw new Error(
-                `No results found for queryString: ${queryString}`
-            );
-        }
-        console.log(results);
+        // if (results.length === 0) {
+        //     throw new Error(`No results found for queryString: ${queryString}`);
+        // }
+
         return results;
     }
 
-    async getCounter(ctx) {
-        return await ctx.stub.getState('counter');
-    }
+    async getNextCounter(ctx) {
+        let counter = await ctx.stub.getState("counter");
+        console.log(counter.toString());
+        
+        counter = parseInt(counter.toString()) + 1;
 
-    async increaseCounter(ctx) {
-        let counter = parseInt(await this.getCounter(ctx)) + 1;
-        await ctx.stub.putState('counter', Buffer.from(counter.toString()));
-    }
+        console.log("COUNTERA");
+        console.log(counter);
+        console.log(counter.toString());
 
+        // counter = counter + 1;
+        console.log("COUNTER_TO_STRING");
+        console.log(counter);
+        console.log(counter.toString());
+
+        // Store the counter JSON in the ledger
+        await ctx.stub.putState(
+            "counter",
+            Buffer.from(JSON.stringify(counter))
+        );
+
+        // await ctx.stub.putState("counter", Buffer.from(counter.toString()));
+        return counter;
+    }
 
     //UTILS
     async resourceExists(ctx, resourceId) {
@@ -388,21 +363,29 @@ class HealthchainCode extends Contract {
 
     getUserRole(ctx) {
         let clientIdentity = new ClientIdentity(ctx.stub);
-        const role = clientIdentity.getAttributeValue('role');
+        const role = clientIdentity.getAttributeValue("role");
         return role;
     }
 
     authorize(ctx, role) {
         if (role !== this.getUserRole(ctx)) {
-            throw new Error('User does not have enough permission.');
+            throw new Error("User does not have enough permission.");
+        }
+    }
+
+    authenticate(ctx, userId) {
+        if (userId.replace(/"/g, "") !== this.getClientId(ctx)) {
+            throw new Error(
+                `You do not have permission to data of user: ${userId.replace(/"/g, "")}`
+            );
         }
     }
 
     getClientId(ctx) {
         let clientIdentity = new ClientIdentity(ctx.stub);
-        let identity = clientIdentity.getID().split('::');
-        identity = identity[1].split('/')[2].split('=');
-        return identity[1].toString('utf8');
+        let identity = clientIdentity.getID().split("::");
+        identity = identity[1].split("/")[2].split("=");
+        return identity[1].toString("utf8");
     }
 }
 

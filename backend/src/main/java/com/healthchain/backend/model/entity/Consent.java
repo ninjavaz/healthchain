@@ -1,4 +1,4 @@
-package com.healthchain.backend.model;
+package com.healthchain.backend.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @Builder
 public class Consent {
-    private String resourceType = "Consent";
+    private String resourceType;
     private String id;
     private Subject subject; //patients id
     private long date;

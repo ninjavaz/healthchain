@@ -1,10 +1,10 @@
-package com.healthchain.backend.model.resource;
+package com.healthchain.backend.model.entity.resource;
 
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
 public class PractitionerResource extends Resource {
 }
