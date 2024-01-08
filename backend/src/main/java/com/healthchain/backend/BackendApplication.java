@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 
 
 @SpringBootApplication
-//@EnableConfigurationProperties(NetworkProperties.class)
 public class BackendApplication {
 
     static {

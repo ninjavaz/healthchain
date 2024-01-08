@@ -26,23 +26,21 @@ public class PractitonerService {
                 PractitionerResource.class, hospName, customIdentity, userId);
     }
 
-    public List<PatientResource> getPatientResourcesForPractitioner(CustomIdentity customIdentity, String userId) throws Exception {
+    public DocumentReference saveDocumentReference(CustomIdentity customIdentity, DocumentRefDTO documentRefDTO) throws Exception {
         String hospName = customIdentity.getHospName() != null ? customIdentity.getHospName() : "hosp1";
-        return this.transactionService.evaluateTransactionWithList(TransactionType.getPatientResourcesForPractitioner,
-                PatientResource.class, hospName, customIdentity, userId);
+        return this.transactionService.submitTransaction(TransactionType.createDocumentReference, DocumentReference.class
+                , hospName, customIdentity, this.mapper.mapToDocumentRef(documentRefDTO));
     }
 
-    public List<DocumentReference> getDocumentReferences(CustomIdentity customIdentity, String userId) throws Exception {
+    public List<DocumentReference> getDocumentReferencesForPractitioner(CustomIdentity customIdentity, String userId) throws Exception {
         String hospName = customIdentity.getHospName() != null ? customIdentity.getHospName() : "hosp1";
         return this.transactionService.evaluateTransactionWithList(TransactionType.getDocumentReferencesForPractitioner,
                 DocumentReference.class, hospName, customIdentity, userId);
     }
 
-    public DocumentReference saveDocumentReference(CustomIdentity customIdentity, DocumentRefDTO documentRefDTO) throws Exception {
+    public List<PatientResource> getPatientResourcesForPractitioner(CustomIdentity customIdentity, String userId) throws Exception {
         String hospName = customIdentity.getHospName() != null ? customIdentity.getHospName() : "hosp1";
-//String patientId, String desc, DocumentReference.Attachment attachment
-        return this.transactionService.submitTransaction(TransactionType.createDocumentReference, DocumentReference.class
-                , hospName, customIdentity, this.mapper.mapToDocumentRef(documentRefDTO));
+        return this.transactionService.evaluateTransactionWithList(TransactionType.getPatientResourcesForPractitioner,
+                PatientResource.class, hospName, customIdentity, userId);
     }
-
 }

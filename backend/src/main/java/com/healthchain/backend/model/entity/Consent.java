@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -13,9 +11,9 @@ import java.util.List;
 public class Consent {
     private String resourceType;
     private String id;
-    private Subject subject; //patients id
+    private Subject subject; //patient id
     private long date;
-    private List<Grantee> grantee; //granted practitioners id
+    private List<Grantee> grantee; //granted practitioner id
     private String decision; //permit | deny
 
     @Data

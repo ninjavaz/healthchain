@@ -2,13 +2,12 @@ package com.healthchain.backend.model.entity;
 
 import lombok.Builder;
 import lombok.Data;
-
 import java.util.List;
 
 @Data
 @Builder
 public class DocumentReference {
-    private String resourceType = "DocumentReference";
+    private String resourceType;
     private String id;
     private Reference subject;
     private String date;

@@ -34,7 +34,6 @@ public class AdminController {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(adminId, CustomIdentity.class);
-//            patient.setResourceType("Patient");
             CustomIdentity identity = this.adminService.enrollUser(Role.PATIENT, obj, resourceDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(identity);
         } catch (Exception e) {

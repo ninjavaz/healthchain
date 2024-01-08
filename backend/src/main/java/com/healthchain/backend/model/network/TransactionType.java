@@ -6,13 +6,21 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum TransactionType {
+    //ADMIN METHODS
     createResource("createResource"),
-    getResourceForUser("getResourceForUser"),
+
+    //PATIENT METHODS
     createConsent("createConsent"),
     getConsentsForPatient("getConsentsForPatient"),
-    getPatientResourcesForPractitioner("getPatientResourcesForPractitioner"),
-    createDocumentReference("createDocumentReference"),
     getDocumentReferencesForPatient("getDocumentReferencesForPatient"),
-    getDocumentReferencesForPractitioner("getDocumentReferencesForPractitioner");
+
+    //PRACTITIONER METHODS
+    createDocumentReference("createDocumentReference"),
+    getDocumentReferencesForPractitioner("getDocumentReferencesForPractitioner"),
+    getPatientResourcesForPractitioner("getPatientResourcesForPractitioner"),
+
+    //UNIVERSAL METHODS
+    getResourceForUser("getResourceForUser");
+
     private final String value;
 }

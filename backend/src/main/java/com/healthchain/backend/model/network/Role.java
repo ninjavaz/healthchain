@@ -2,7 +2,6 @@ package com.healthchain.backend.model.network;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
 @AllArgsConstructor
 @Getter

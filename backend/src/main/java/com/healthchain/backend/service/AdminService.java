@@ -31,11 +31,6 @@ public class AdminService {
     @Autowired
     private Mapper mapper;
 
-    /**
-     * Method used only while starting an app to create current admin Identities and save them in the wallet.
-     *
-     * @param hospName
-     */
     public void enrollAdmin(String hospName) {
         // Create a CA client for interacting with the CA.
         HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);
@@ -74,14 +69,6 @@ public class AdminService {
 
     }
 
-    /**
-     * Method that registers new user and returning their Identities to download and store for next auth processes
-     *
-     * @param role     - role of the user
-     * @param adminId  - adminId needed to register and enroll the user
-     * @param resource - resource
-     * @return - customIdentity of created user
-     */
     public CustomIdentity enrollUser(Role role, CustomIdentity adminId, ResourceDTO resourceDTO) throws Exception {
         Resource resource = null;
 
@@ -93,7 +80,6 @@ public class AdminService {
                 resource = this.mapper.mapToPractitionerResource(resourceDTO);
                 break;
         }
-
 
         String hospName = resource.getManagingOrganization().getIdentifier();
         HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);
@@ -128,7 +114,6 @@ public class AdminService {
         String enrollmentSecret = caClient.register(registrationRequest, buildAdminUser(hospName, adminIdentity));
         X509Enrollment enrollment = (X509Enrollment) caClient.enroll(resource.getId(), enrollmentSecret);
 
-
         CustomIdentity customIdentity = CustomIdentity.builder()
                 .mspId(adminId.getMspId())
                 .credentials(
@@ -154,45 +139,13 @@ public class AdminService {
     private void createResource(CustomIdentity adminIdentity, Resource resource) throws Exception {
         String hospName = resource.getManagingOrganization().getIdentifier();
         this.transactionService.submitTransaction(TransactionType.createResource, Resource.class, hospName, adminIdentity, resource);
-//        HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);
-//
-//        Gateway.Builder builder = Gateway.createBuilder();
-//        builder.identity(adminId)
-//                .networkConfig(Paths.get(hospInfo.getNetworkConfigPath()))
-//                .discovery(true);
-//
-//        // create a gateway connection
-//        Gateway gateway = builder.connect();
-//        // get the network and contract
-//        Network network = gateway.getNetwork(networkProps.getChannel());
-//        Contract contract = network.getContract(networkProps.getContract());
-//
-//        // Gson instance
-//        Gson gson = new Gson();
-//
-//        // Convert object to JSON string
-//        String resourceJson = gson.toJson(resource);
-//        contract.submitTransaction("createResource", resourceJson);
-//        return new String(contract.submitTransaction("createResource", resourceJson));
     }
 
-    /**
-     * Compare identity and customIdentity in order to check wether data given by user are correct and related to already stored Identity.
-     *
-     * @param identity
-     * @param customIdentity
-     * @return
-     */
     private boolean isIdentitySameAsCustomIdentity(X509Identity identity, CustomIdentity customIdentity) {
         return Identities.toPemString(identity.getCertificate()).equals(customIdentity.getCredentials().getCertificate())
                 && Identities.toPemString(identity.getPrivateKey()).equals(customIdentity.getCredentials().getPrivateKey());
     }
 
-    /**
-     * @param hospName
-     * @param adminId
-     * @return
-     */
     private CustomUser buildAdminUser(String hospName, X509Identity adminId) {
         HospInfo hospInfo = networkProps.getHospInfoByName().get(hospName);
         return CustomUser.builder()

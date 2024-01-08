@@ -42,12 +42,13 @@ public class PatientController {
         }
     }
 
-    @RequestMapping(value = "/Consent", method = RequestMethod.GET)
-    public ResponseEntity<?> getConsents(@RequestHeader("Authorization") String identity, @RequestParam("userId") String userId) {
+    @RequestMapping(value = "/DocumentReference", method = RequestMethod.GET)
+    public ResponseEntity<?> getDocumentReferences(@RequestHeader("Authorization") String identity,
+                                                   @RequestParam("userId") String userId) {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
-            List<Consent> consents = this.patientService.getConsents(obj, userId);
+            List<DocumentReference> consents = this.patientService.getDocumentReferencesForPatient(obj, userId);
             return ResponseEntity.status(HttpStatus.OK).body(consents);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
@@ -57,13 +58,12 @@ public class PatientController {
         }
     }
 
-    @RequestMapping(value = "/DocumentReference", method = RequestMethod.GET)
-    public ResponseEntity<?> getDocumentReferences(@RequestHeader("Authorization") String identity,
-                                                   @RequestParam("userId") String userId) {
+    @RequestMapping(value = "/Consent", method = RequestMethod.GET)
+    public ResponseEntity<?> getConsents(@RequestHeader("Authorization") String identity, @RequestParam("userId") String userId) {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
-            List<DocumentReference> consents = this.patientService.getDocumentReferences(obj, userId);
+            List<Consent> consents = this.patientService.getConsents(obj, userId);
             return ResponseEntity.status(HttpStatus.OK).body(consents);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {

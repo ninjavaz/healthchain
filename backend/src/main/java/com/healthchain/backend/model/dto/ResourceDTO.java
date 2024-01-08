@@ -1,12 +1,9 @@
 package com.healthchain.backend.model.dto;
 
-import com.healthchain.backend.model.entity.resource.Resource;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Builder

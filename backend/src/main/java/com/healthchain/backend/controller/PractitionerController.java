@@ -63,7 +63,7 @@ public class PractitionerController {
         try {
             Gson gson = new Gson();
             CustomIdentity obj = gson.fromJson(identity, CustomIdentity.class);
-            List<DocumentReference> docRefs = this.practitonerService.getDocumentReferences(obj, userId);
+            List<DocumentReference> docRefs = this.practitonerService.getDocumentReferencesForPractitioner(obj, userId);
             return ResponseEntity.status(HttpStatus.OK).body(docRefs);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
