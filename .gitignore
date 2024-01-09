@@ -12,10 +12,12 @@ vendor/
 .gradle
 .idea
 # Dependency directories
-node_modules/
+*node_modules/
 
 # crypto identities ignoring
-organizations/ordererOrganizations
-organizations/peerOrganizations
-/organizations/fabric-ca/hosp*
-/organizations/fabric-ca/orderer*
+/network/organizations/ordererOrganizations
+/network/organizations/peerOrganizations
+/network/organizations/fabric-ca/hosp*
+/network/organizations/fabric-ca/orderer*
+
+.vagrant
