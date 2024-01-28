@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
     # Configuration for Virtual Box
     config.vm.provider :virtualbox do |vb|
         # Change the memory here if needed - 3 Gb memory on Virtual Box VM
-        vb.customize ["modifyvm", :id, "--memory", "12288", "--cpus", "8"]
+        vb.customize ["modifyvm", :id, "--memory", "12288", "--cpus", "4"]
         # Change this only if you need destop for Ubuntu - you will need more memory
         vb.gui = false
     end
